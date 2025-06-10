@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Module extends Model
 {
-    public function attendances()
+protected $fillable = ['name', 'start_date', 'end_date', 'course_id', 'hours'];
+
+public function attendances()
 {
     return $this->hasMany(Attendance::class);
 }

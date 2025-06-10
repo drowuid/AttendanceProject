@@ -9,6 +9,8 @@
         <h1 class="text-3xl font-bold mb-6">Trainer Dashboard</h1>
 
 <a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm mb-4 inline-block">View Course Calendar</a>
+<a href="{{ route('trainer.reports') }}" class="text-blue-600 underline">View Reports</a>
+
 
 
         @if($modules->count() === 0)
