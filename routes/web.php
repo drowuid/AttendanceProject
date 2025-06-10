@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TrainerController; // ✅ Add this
+use App\Http\Controllers\TrainerController; 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CalendarController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +31,17 @@ Route::middleware('auth')->group(function () {
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
+
+
+    Route::get('/trainee/attendance', [AttendanceController::class, 'create'])->name('trainee.attendance.create');
+    Route::post('/trainee/attendance', [AttendanceController::class, 'store'])->name('trainee.attendance.store');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+});
+
+
+
 });
 
 require __DIR__.'/auth.php';

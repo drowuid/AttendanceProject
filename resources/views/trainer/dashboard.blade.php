@@ -8,6 +8,9 @@
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow p-6">
         <h1 class="text-3xl font-bold mb-6">Trainer Dashboard</h1>
 
+<a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm mb-4 inline-block">View Course Calendar</a>
+
+
         @if($modules->count() === 0)
             <p class="text-gray-500">No modules found. Please add a module first.</p>
         @else

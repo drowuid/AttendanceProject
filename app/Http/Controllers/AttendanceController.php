@@ -4,51 +4,47 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\Module;
-use App\Models\Trainee;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-    public function showForm()
+    public function create()
     {
-        $modules = Module::all();
-        return view('attendance.form', compact('modules'));
+        return view('trainee.attendance');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'trainee_id' => 'required|exists:trainees,id',
-            'module_id' => 'required|exists:modules,id',
-            'type' => 'required|in:entry,exit',
-        ]);
-
+        $user = Auth::user();
         $now = Carbon::now();
-        $date = $now->toDateString();
-        $time = $now->toTimeString();
-        $hostname = gethostname();
+        $pcName = gethostname();
 
-        $attendance = Attendance::firstOrNew([
-            'trainee_id' => $request->trainee_id,
-            'module_id' => $request->module_id,
-            'date' => $date,
-        ]);
+        if ($request->status === 'present') {
+            Attendance::create([
+                'trainee_id' => $user->id,
+                'date' => $now->toDateString(),
+                'entry_time' => $now->toTimeString(),
+                'status' => 'present',
+                'reason' => $request->reason,
+                'pc_name' => $pcName,
+            ]);
+        } elseif ($request->status === 'exit') {
+            // Update today's entry
+            $attendance = Attendance::where('trainee_id', $user->id)
+                ->where('date', $now->toDateString())
+                ->latest()
+                ->first();
 
-        if ($request->type === 'entry') {
-            $attendance->entry_time = $time;
-
-            // Mark as late if after 09:15 (example)
-            $attendance->status = $now->gt(Carbon::createFromTime(9, 15)) ? 'late' : 'present';
-        } else {
-            $attendance->exit_time = $time;
+            if ($attendance) {
+                $attendance->update([
+                    'exit_time' => $now->toTimeString(),
+                    'pc_name' => $pcName,
+                    'reason' => $request->reason ?? $attendance->reason,
+                ]);
+            }
         }
 
-        $attendance->pc_identifier = $hostname;
-        $attendance->reason = $request->reason ?? null;
-        $attendance->save();
-
-        return back()->with('success', 'Attendance logged.');
+        return redirect()->back()->with('success', 'Attendance recorded.');
     }
 }
-

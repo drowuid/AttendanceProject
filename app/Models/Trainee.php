@@ -12,5 +12,11 @@ class Trainee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function modules()
+{
+    return $this->belongsToMany(\App\Models\Module::class);
+}
+
 }
 

@@ -11,4 +11,10 @@ class Module extends Model
     return $this->hasMany(Attendance::class);
 }
 
+public function trainees()
+{
+    return $this->belongsToMany(\App\Models\Trainee::class);
+}
+
+
 }

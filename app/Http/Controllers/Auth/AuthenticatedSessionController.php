@@ -40,4 +40,9 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function create()
+    {
+        return view('auth.login');
+    }
 }
