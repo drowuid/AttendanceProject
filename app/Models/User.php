@@ -56,4 +56,14 @@ public function isTrainee()
     return $this->role === 'trainee';
 }
 
+public function modules()
+{
+    return $this->hasMany(Module::class, 'trainer_id');
+}
+
+public function absences()
+{
+    return $this->hasMany(Absence::class);
+}
+
 }

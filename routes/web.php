@@ -7,6 +7,10 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TrainerReportController;
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\Admin\AbsenceController as AdminAbsenceController;
+use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,20 +37,48 @@ Route::middleware('auth')->group(function () {
     // Trainer dashboard for authenticated users
     Route::get('/trainer/dashboard', [TrainerController::class, 'dashboard'])->name('trainer.dashboard');
 
+    // Trainer module reports
+    Route::get('/trainer/module-reports', [TrainerReportController::class, 'index'])->name('trainer.moduleReports');
+    Route::get('/trainer/module-reports/{module}', [TrainerReportController::class, 'show'])->name('trainer.moduleReports.show');
+
     Route::get('/trainee/attendance', [AttendanceController::class, 'create'])->name('trainee.attendance.create');
     Route::post('/trainee/attendance', [AttendanceController::class, 'store'])->name('trainee.attendance.store');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
-    Route::middleware(['auth', 'role:trainer'])->group(function () {
-    Route::get('/trainer/reports', [TrainerController::class, 'reports'])->name('trainer.reports');
-});
+    // Trainer-only routes
+    Route::middleware(['role:trainer'])->group(function () {
+        Route::get('/trainer/reports', [TrainerController::class, 'reports'])->name('trainer.reports');
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    });
 
+    // Absence management routes
+    Route::get('/absences', [AbsenceController::class, 'index'])->name('absences.index');
+    Route::put('/absences/{absence}', [AbsenceController::class, 'update'])->name('absences.update');
 
-Route::middleware(['auth', 'role:trainer'])->group(function () {
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-});
+    // Admin routes for managing absences
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/absences/{absence}/edit', [AdminAbsenceController::class, 'edit'])->name('absences.edit');
+        Route::put('/absences/{absence}', [AdminAbsenceController::class, 'update'])->name('absences.update');
+        Route::delete('/absences/{absence}', [AdminAbsenceController::class, 'destroy'])->name('absences.destroy');
+        Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
+        Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
+        Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
+        Route::get('/admin/absences/export', [AdminAbsenceController::class, 'export'])->name('admin.absences.export');
+    });
 
+    // Trainer routes for managing absences
+    Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
+        Route::get('/absences/{absence}/edit', [TrainerAbsenceController::class, 'edit'])->name('absences.edit');
+        Route::put('/absences/{absence}', [TrainerAbsenceController::class, 'update'])->name('absences.update');
+        Route::delete('/absences/{absence}', [TrainerAbsenceController::class, 'destroy'])->name('absences.destroy');
+        Route::get('/absences/trash', [TrainerAbsenceController::class, 'trash'])->name('absences.trash');
+        Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
+        Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
+        Route::get('/trainer/absences/export', [TrainerAbsenceController::class, 'export'])->name('trainer.absences.export');
+
+    });
+    
 
 });
 

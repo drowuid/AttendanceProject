@@ -18,5 +18,12 @@ public function trainees()
     return $this->belongsToMany(\App\Models\Trainee::class);
 }
 
+public function absences()
+{
+    return $this->hasMany(Absence::class);
+}
+
+
+
 
 }

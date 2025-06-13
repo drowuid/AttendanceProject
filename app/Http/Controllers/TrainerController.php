@@ -46,8 +46,40 @@ class TrainerController extends Controller
         }
     }
 
+    
+
     return view('trainer.reports', compact('traineeStats'));
 }
+
+public function export(Request $request)
+{
+    $trainerId = auth()->id();
+
+    $query = Absence::with(['user', 'module'])->whereHas('module', function ($q) use ($trainerId) {
+        $q->where('trainer_id', $trainerId);
+    });
+
+    if ($request->filled('user_id')) {
+        $query->where('user_id', $request->user_id);
+    }
+
+    if ($request->filled('module_id')) {
+        $query->where('module_id', $request->module_id);
+    }
+
+    if ($request->filled('search')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%');
+        });
+    }
+
+    $absences = $query->get();
+
+    $pdf = Pdf::loadView('trainer.absences.pdf', compact('absences'));
+
+    return $pdf->download('trainer_absences.pdf');
+}
+
 
 }
 
