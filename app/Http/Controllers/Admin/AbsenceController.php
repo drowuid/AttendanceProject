@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+
 
 class AbsenceController extends Controller
 {
@@ -113,5 +115,40 @@ public function export(Request $request)
 
     return $pdf->download('absences_report.pdf');
 }
+
+public function stats()
+{
+    $totalAbsences = Absence::count();
+
+    $absencesByModule = Absence::select('module_id', DB::raw('count(*) as total'))
+        ->groupBy('module_id')
+        ->with('module')
+        ->get();
+
+    $absencesPerMonth = Absence::selectRaw('DATE_FORMAT(date, "%Y-%m") as month, COUNT(*) as count')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('count', 'month');
+
+    return view('admin.absences.stats', compact('totalAbsences', 'absencesByModule', 'absencesPerMonth'));
+}
+
+public function calendar()
+{
+    $absences = Absence::with(['user', 'module'])->get();
+
+    $events = $absences->map(function ($absence) {
+        return [
+            'title' => $absence->user->name . ' - ' . $absence->module->name,
+            'start' => $absence->date,
+            'url'   => route('admin.absences.show', $absence->id),
+        ];
+    });
+
+    return view('admin.absences.calendar', [
+        'events' => $events
+    ]);
+}
+
 
 }

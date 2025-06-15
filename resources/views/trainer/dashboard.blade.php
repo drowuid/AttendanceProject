@@ -3,16 +3,41 @@
 <head>
     <title>Trainer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow p-6">
         <h1 class="text-3xl font-bold mb-6">Trainer Dashboard</h1>
 
-<a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm mb-4 inline-block">View Course Calendar</a>
-<a href="{{ route('trainer.reports') }}" class="text-blue-600 underline">View Reports</a>
+        <!-- Links -->
+        <a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm mb-4 inline-block">View Course Calendar</a>
+        <a href="{{ route('trainer.reports') }}" class="text-blue-600 underline ml-4 text-sm">View Reports</a>
 
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-6">
+            <div class="bg-gray-100 p-4 rounded-xl shadow">
+                <h2 class="text-lg font-semibold mb-2">My Trainees</h2>
+                <p class="text-3xl font-bold">{{ $traineesCount }}</p>
+            </div>
 
+            <div class="bg-gray-100 p-4 rounded-xl shadow">
+                <h2 class="text-lg font-semibold mb-2">My Modules</h2>
+                <p class="text-3xl font-bold">{{ $modulesCount }}</p>
+            </div>
 
+            <div class="bg-gray-100 p-4 rounded-xl shadow">
+                <h2 class="text-lg font-semibold mb-2">Total Absences</h2>
+                <p class="text-3xl font-bold">{{ $absencesCount }}</p>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="bg-gray-50 p-6 rounded-xl shadow mb-10">
+            <h2 class="text-xl font-semibold mb-4">Absences Per Module</h2>
+            <canvas id="moduleAbsenceChart" height="100"></canvas>
+        </div>
+
+        <!-- Module Attendance Table -->
         @if($modules->count() === 0)
             <p class="text-gray-500">No modules found. Please add a module first.</p>
         @else
@@ -71,5 +96,33 @@
             @endforeach
         @endif
     </div>
+
+    <!-- Chart Script -->
+    <script>
+        const ctx = document.getElementById('moduleAbsenceChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($absencesPerModule->keys()) !!},
+                datasets: [{
+                    label: 'Absences',
+                    data: {!! json_encode($absencesPerModule->values()) !!},
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

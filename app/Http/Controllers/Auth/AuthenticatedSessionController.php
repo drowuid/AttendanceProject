@@ -18,12 +18,16 @@ class AuthenticatedSessionController extends Controller
         if (Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            // Redirect based on role
             $user = Auth::user();
-            if ($user->role === 'trainer') {
+
+            // Role-based redirect
+            if ($user->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            } elseif ($user->role === 'trainer') {
                 return redirect()->intended('/trainer/dashboard');
+            } else {
+                return redirect()->intended('/trainee/dashboard');
             }
-            return redirect()->intended('/trainee/dashboard');
         }
 
         return back()->withErrors([
