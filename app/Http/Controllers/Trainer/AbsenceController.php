@@ -124,5 +124,35 @@ public function calendar()
     return view('trainer.absences.calendar', ['events' => $events]);
 }
 
+public function stats()
+    {
+        $trainer = Auth::user();
+
+        // Adjust this depending on your system's trainer-user-module logic
+        $absences = Absence::with('user', 'module')
+            ->whereHas('module', function ($query) use ($trainer) {
+                $query->where('trainer_id', $trainer->id); // adjust if needed
+            })
+            ->get();
+
+        $totalAbsences = $absences->count();
+
+        $absencesByModule = $absences->groupBy('module.name')->map(function ($group) {
+            return $group->count();
+        });
+
+        $absencesPerMonth = $absences->groupBy(function ($absence) {
+            return \Carbon\Carbon::parse($absence->date)->format('F Y');
+        })->map(function ($group) {
+            return $group->count();
+        });
+
+        return view('trainer.absences.stats', compact(
+            'totalAbsences',
+            'absencesByModule',
+            'absencesPerMonth'
+        ));
+    }
+
 
 }

@@ -20,15 +20,14 @@ class Absence extends Model
 
 
     public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
-    public function module()
-    {
-        return $this->belongsTo(Module::class);
-    }
-
+public function module()
+{
+    return $this->belongsTo(Module::class, 'module_id');
+}
     
 
 

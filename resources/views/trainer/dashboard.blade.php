@@ -37,6 +37,22 @@
             <canvas id="moduleAbsenceChart" height="100"></canvas>
         </div>
 
+        <!-- Filter Form -->
+<form method="GET" action="{{ route('trainer.dashboard') }}" class="mb-6 flex flex-wrap items-end gap-4">
+    <div>
+        <label class="block text-sm font-medium">Module Name</label>
+        <input type="text" name="name" value="{{ request('name') }}" class="border rounded p-2 w-full">
+    </div>
+    <div>
+        <label class="block text-sm font-medium">Start Date After</label>
+        <input type="date" name="start_date" value="{{ request('start_date') }}" class="border rounded p-2 w-full">
+    </div>
+    <div class="mt-1">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
+    </div>
+</form>
+
+
         <!-- Module Attendance Table -->
         @if($modules->count() === 0)
             <p class="text-gray-500">No modules found. Please add a module first.</p>

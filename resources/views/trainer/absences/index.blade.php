@@ -36,6 +36,10 @@
 <a href="{{ route('trainer.absences.calendar') }}" class="bg-blue-600 text-white px-4 py-2 rounded">
     📅 View Absence Calendar
 </a>
+
+<a href="{{ route('trainer.absences.stats') }}" class="block py-2 px-4 hover:bg-gray-100">
+    📊 View Absence Stats
+</a>
                 </form>
             </td>
         </tr>

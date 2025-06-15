@@ -37,11 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // Trainer dashboard for authenticated users
     // Route::get('/trainer/dashboard', [TrainerController::class, 'dashboard'])->name('trainer.dashboard');
-    Route::get('/trainer/dashboard', [TrainerController::class, 'dashboard'])->name('trainer.dashboard');
 
     // Trainer module reports
     Route::get('/trainer/module-reports', [TrainerReportController::class, 'index'])->name('trainer.moduleReports');
     Route::get('/trainer/module-reports/{module}', [TrainerReportController::class, 'show'])->name('trainer.moduleReports.show');
+    
 
     Route::get('/trainee/attendance', [AttendanceController::class, 'create'])->name('trainee.attendance.create');
     Route::post('/trainee/attendance', [AttendanceController::class, 'store'])->name('trainee.attendance.store');
@@ -66,9 +66,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
         Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
         Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-        Route::get('/admin/absences/export', [AdminAbsenceController::class, 'export'])->name('admin.absences.export');
-        Route::get('/admin/absences/stats', [AdminAbsenceController::class, 'stats'])->name('admin.absences.stats');
-        Route::get('/admin/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('admin.absences.calendar');
+        Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
+        Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
+        Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
 
 
     });
@@ -81,22 +81,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/absences/trash', [TrainerAbsenceController::class, 'trash'])->name('absences.trash');
         Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
         Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-        Route::get('/trainer/absences/export', [TrainerAbsenceController::class, 'export'])->name('trainer.absences.export');
+        Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');
         
 
     });
     // Admin dashboard route
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-        Route::get('/admin/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('admin.absences.calendar');
     });
 
     // Trainer dashboard route
     Route::middleware(['role:trainer'])->group(function () {
-        Route::get('/trainer/dashboard', [TrainerDashboardController::class, 'index'])->name('trainer.dashboard');
         Route::get('/trainer/absences/calendar', [TrainerAbsenceController::class, 'calendar'])->name('trainer.absences.calendar');
-    });
+        Route::get('/trainer/absences/stats', [TrainerAbsenceController::class, 'stats'])->name('trainer.absences.stats');
+        Route::get('/trainer/dashboard', [TrainerDashboardController::class, 'index'])->name('trainer.dashboard');
 
+    });
 });
 
 require __DIR__.'/auth.php';

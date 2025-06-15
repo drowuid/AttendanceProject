@@ -23,7 +23,10 @@ public function absences()
     return $this->hasMany(Absence::class);
 }
 
-
+public function trainer()
+{
+    return $this->belongsTo(User::class, 'trainer_id');
+}
 
 
 }
