@@ -37,20 +37,87 @@
             <canvas id="moduleAbsenceChart" height="100"></canvas>
         </div>
 
-        <!-- Filter Form -->
-<form method="GET" action="{{ route('trainer.dashboard') }}" class="mb-6 flex flex-wrap items-end gap-4">
-    <div>
-        <label class="block text-sm font-medium">Module Name</label>
-        <input type="text" name="name" value="{{ request('name') }}" class="border rounded p-2 w-full">
-    </div>
-    <div>
-        <label class="block text-sm font-medium">Start Date After</label>
-        <input type="date" name="start_date" value="{{ request('start_date') }}" class="border rounded p-2 w-full">
-    </div>
-    <div class="mt-1">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
-    </div>
-</form>
+        <!-- Upcoming Modules -->
+<div class="bg-white p-6 rounded-xl shadow mb-10">
+    <h2 class="text-xl font-semibold mb-4">Upcoming Modules</h2>
+
+    @if($upcomingModules->isEmpty())
+        <p class="text-sm text-gray-500 italic">You have no upcoming modules scheduled.</p>
+    @else
+        <ul class="space-y-2">
+            @foreach($upcomingModules as $upcoming)
+                <li class="p-3 bg-gray-100 rounded-xl shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="font-semibold text-lg">{{ $upcoming->name }}</p>
+                        <p class="text-sm text-gray-600">
+                            {{ \Carbon\Carbon::parse($upcoming->start_date)->format('M d, Y') }}
+                            →
+                            {{ \Carbon\Carbon::parse($upcoming->end_date)->format('M d, Y') }}
+                        </p>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                        Starts in {{ \Carbon\Carbon::parse($upcoming->start_date)->diffInDays(now()) }} days
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
+
+<!-- Trainee Absence Summary -->
+<div class="bg-white p-6 rounded-xl shadow mb-10">
+    <h2 class="text-xl font-semibold mb-4">Trainee Absence Summary</h2>
+
+    @if($traineeAbsenceSummary->isEmpty())
+        <p class="text-sm text-gray-500 italic">No absences recorded yet.</p>
+    @else
+        <ul class="divide-y divide-gray-200">
+            @foreach($traineeAbsenceSummary as $summary)
+                <li class="py-3 flex justify-between items-center">
+                    <div>
+                        <p class="font-semibold text-lg">
+                            {{ $summary['trainee']?->name ?? 'Unknown Trainee' }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            Email: {{ $summary['trainee']?->email ?? '-' }}
+                        </p>
+                    </div>
+                    <span class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full">
+                        {{ $summary['absences'] }} Absences
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
+
+<!-- Recent Absences Timeline -->
+<div class="bg-white p-6 rounded-xl shadow mb-10">
+    <h2 class="text-xl font-semibold mb-4">Recent Absences</h2>
+
+    @if($recentAbsences->isEmpty())
+        <p class="text-sm text-gray-500 italic">No recent absences recorded.</p>
+    @else
+        <ul class="space-y-4">
+            @foreach($recentAbsences as $absence)
+                <li class="flex justify-between items-start border-l-4 border-red-400 pl-4">
+                    <div>
+                        <p class="font-semibold">{{ $absence->trainee?->name ?? 'Unknown Trainee' }}</p>
+                        <p class="text-sm text-gray-600">
+                            Module: {{ $absence->module?->name ?? 'Unknown' }}
+                        </p>
+                        <p class="text-xs text-gray-400">
+                            {{ \Carbon\Carbon::parse($absence->date)->format('d M Y') }}
+                        </p>
+                    </div>
+                    <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Absent</span>
+                </li>
+            @endforeach
+        </ul>
+    @endif
+</div>
+
+
 
 
         <!-- Module Attendance Table -->

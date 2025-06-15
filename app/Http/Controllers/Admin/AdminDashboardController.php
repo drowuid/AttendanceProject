@@ -7,6 +7,8 @@ use App\Models\Trainer;
 use App\Models\Absence;
 use App\Models\Module;
 use App\Models\Course;
+use App\Models\Attendance;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -20,6 +22,11 @@ class AdminDashboardController extends Controller
     $courseCount = Course::count();
     $activeSessions = 0;
 
+    // New counts for dashboard cards
+    $traineesCount = User::where('role', 'trainee')->count();
+    $absencesCount = Attendance::where('status', 'absent')->count();
+    $modulesCount = Module::count();
+
     // Absences per module
     $absencesPerModule = DB::table('absences')
         ->join('modules', 'absences.module_id', '=', 'modules.id')
@@ -28,18 +35,21 @@ class AdminDashboardController extends Controller
         ->pluck('total', 'module')
         ->toArray();
 
-$absenceChartLabels = []; // e.g. ['Jan', 'Feb', 'Mar', ...]
-$absenceChartData = [];   // e.g. [3, 5, 2, ...]
+    $absenceChartLabels = []; // e.g. ['Jan', 'Feb', 'Mar', ...]
+    $absenceChartData = [];   // e.g. [3, 5, 2, ...]
 
-return view('admin.dashboard', compact(
-    'userCount',
-    'trainerCount',
-    'absenceCount',
-    'moduleCount',
-    'courseCount',
-    'activeSessions',
-    'absenceChartLabels',
-    'absenceChartData',
-));
+    return view('admin.dashboard', compact(
+        'userCount',
+        'trainerCount',
+        'traineesCount',
+        'absenceCount',
+        'absencesCount',
+        'moduleCount',
+        'modulesCount',
+        'courseCount',
+        'activeSessions',
+        'absenceChartLabels',
+        'absenceChartData'
+    ));
 }
 }

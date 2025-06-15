@@ -6,43 +6,56 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        <!-- Users -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Total Users</h2>
-            <p class="text-3xl font-bold">{{ $userCount }}</p>
-        </div>
-
-        <!-- Trainers -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Total Trainers</h2>
-            <p class="text-3xl font-bold">{{ $trainerCount }}</p>
-        </div>
-
-        <!-- Absences -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Total Absences</h2>
-            <p class="text-3xl font-bold">{{ $absenceCount }}</p>
-        </div>
-
-        <!-- Modules -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Modules</h2>
-            <p class="text-3xl font-bold">{{ $moduleCount }}</p>
-        </div>
-
-        <!-- Courses -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Courses</h2>
-            <p class="text-3xl font-bold">{{ $courseCount }}</p>
-        </div>
-
-        <!-- Active Sessions -->
-        <div class="bg-white p-4 rounded-2xl shadow">
-            <h2 class="text-lg font-semibold mb-2">Active Sessions</h2>
-            <p class="text-3xl font-bold">{{ $activeSessions ?? 0 }}</p>
-        </div>
-
+    <!-- Users -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Total Users</h2>
+        <p class="text-3xl font-bold">{{ $userCount }}</p>
     </div>
+
+    <!-- Trainers -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Total Trainers</h2>
+        <p class="text-3xl font-bold">{{ $trainerCount }}</p>
+    </div>
+
+    <!-- Trainees -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Total Trainees</h2>
+        <p class="text-3xl font-bold">{{ $traineesCount }}</p>
+    </div>
+
+    <!-- Absences (from absences table) -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Total Absences (Records)</h2>
+        <p class="text-3xl font-bold">{{ $absenceCount }}</p>
+    </div>
+
+    <!-- Absences (from attendances with status = absent) -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Total Absences (Marked)</h2>
+        <p class="text-3xl font-bold">{{ $absencesCount }}</p>
+    </div>
+
+    <!-- Modules -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Modules</h2>
+        <p class="text-3xl font-bold">{{ $moduleCount }}</p>
+    </div>
+
+    <!-- Courses -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Courses</h2>
+        <p class="text-3xl font-bold">{{ $courseCount }}</p>
+    </div>
+
+    <!-- Active Sessions -->
+    <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="text-lg font-semibold mb-2">Active Sessions</h2>
+        <p class="text-3xl font-bold">{{ $activeSessions ?? 0 }}</p>
+    </div>
+
+</div>
+
 
     <!-- Absence Chart -->
     <div class="mt-10 bg-white p-6 rounded-2xl shadow">
