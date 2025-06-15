@@ -10,7 +10,7 @@
         </div>
     @endif
 
-    <form method="GET" class="mb-4 flex flex-wrap gap-2">
+    <form method="GET" class="mb-4 flex flex-wrap gap-2 items-center">
         <select name="user_id" class="border p-2 rounded">
             <option value="">All Users</option>
             @foreach($users as $user)
@@ -34,9 +34,15 @@
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Filter</button>
 
         <a href="{{ route('admin.absences.export', request()->query()) }}"
-   class="bg-green-600 text-white px-4 py-2 rounded">
-   Export PDF
-</a>
+           class="bg-green-600 text-white px-4 py-2 rounded">
+           Export PDF
+        </a>
+
+        {{-- ✅ Calendar View Button --}}
+        <a href="{{ route('admin.absences.calendar') }}"
+           class="bg-purple-600 text-white px-4 py-2 rounded">
+           📅 View Absence Calendar
+        </a>
     </form>
 
     <table class="w-full table-auto border-collapse shadow-sm bg-white rounded">

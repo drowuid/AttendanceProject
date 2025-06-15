@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="p-6">
-    <h2 class="text-2xl font-semibold mb-4">Absence Calendar</h2>
+    <h2 class="text-2xl font-semibold mb-4">Trainer Absence Calendar</h2>
 
     <div id="calendar" class="bg-white shadow rounded p-4"></div>
 </div>
@@ -23,7 +23,7 @@
             events: {!! json_encode($events) !!},
             headerToolbar: {
                 left: 'prev,next today',
-                center: 'title',
+                center: 'Trainer Absence Calendar',
                 right: 'dayGridMonth,listWeek'
             },
             eventClick: function(info) {
@@ -38,4 +38,3 @@
     });
 </script>
 @endsection
-

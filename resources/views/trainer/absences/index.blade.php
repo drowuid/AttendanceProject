@@ -32,6 +32,10 @@
    class="bg-green-600 text-white px-4 py-2 rounded">
    Export PDF
 </a>
+
+<a href="{{ route('trainer.absences.calendar') }}" class="bg-blue-600 text-white px-4 py-2 rounded">
+    📅 View Absence Calendar
+</a>
                 </form>
             </td>
         </tr>

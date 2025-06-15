@@ -108,5 +108,21 @@ public function forceDelete($id)
     return redirect()->route('trainer.absences.trash')->with('success', 'Absence permanently deleted.');
 }
 
+public function calendar()
+{
+    $absences = Absence::with(['user', 'module'])->get();
+
+    $events = $absences->map(function ($absence) {
+        return [
+            'title' => $absence->user->name . ' - ' . $absence->module->name,
+            'start' => $absence->date,
+            'color' => $absence->is_excused ? '#34d399' : '#f87171',
+            'url' => route('trainer.absences.show', $absence->id),
+        ];
+    });
+
+    return view('trainer.absences.calendar', ['events' => $events]);
+}
+
 
 }

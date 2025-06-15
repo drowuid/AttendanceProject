@@ -6,7 +6,7 @@
 
     <p class="mb-4">Total Absences: <strong>{{ $totalAbsences }}</strong></p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
         <div>
             <h3 class="text-lg font-bold mb-2">Absences Per Module</h3>
             <canvas id="moduleChart"></canvas>
@@ -17,6 +17,44 @@
             <canvas id="monthChart"></canvas>
         </div>
     </div>
+
+    {{-- Detailed breakdown per trainee per module --}}
+    <h2 class="text-xl font-semibold mb-4">Detailed Absence Breakdown by Module & Trainee</h2>
+
+    @foreach ($stats as $group)
+        <div class="mb-10">
+            <h3 class="text-lg font-bold mb-2">
+                {{ $group['module']->name }} ({{ $group['module']->start_date }} - {{ $group['module']->end_date }})
+            </h3>
+
+            @if (count($group['traineeStats']) === 0)
+                <p class="text-gray-500 italic">No absences recorded for this module.</p>
+            @else
+                <table class="w-full text-sm border bg-white rounded shadow">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="p-2 border">Trainee</th>
+                            <th class="p-2 border">Total Absences</th>
+                            <th class="p-2 border">Excused</th>
+                            <th class="p-2 border">Unexcused</th>
+                            <th class="p-2 border">Excused %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($group['traineeStats'] as $row)
+                            <tr>
+                                <td class="border p-2">{{ $row['user']->name }}</td>
+                                <td class="border p-2">{{ $row['total'] }}</td>
+                                <td class="border p-2">{{ $row['excused'] }}</td>
+                                <td class="border p-2">{{ $row['unexcused'] }}</td>
+                                <td class="border p-2">{{ $row['percentage'] }}%</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    @endforeach
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

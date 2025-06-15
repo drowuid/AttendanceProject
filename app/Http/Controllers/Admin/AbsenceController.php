@@ -118,19 +118,40 @@ public function export(Request $request)
 
 public function stats()
 {
-    $totalAbsences = Absence::count();
+    $modules = Module::with(['attendances.user'])->get();
 
-    $absencesByModule = Absence::select('module_id', DB::raw('count(*) as total'))
-        ->groupBy('module_id')
-        ->with('module')
-        ->get();
+    $stats = [];
 
-    $absencesPerMonth = Absence::selectRaw('DATE_FORMAT(date, "%Y-%m") as month, COUNT(*) as count')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->pluck('count', 'month');
+    foreach ($modules as $module) {
+        $traineeStats = [];
 
-    return view('admin.absences.stats', compact('totalAbsences', 'absencesByModule', 'absencesPerMonth'));
+        foreach ($module->attendances->groupBy('user_id') as $userId => $records) {
+            $user = $records->first()->user;
+            $total = $records->count();
+            $excused = $records->where('is_excused', true)->count();
+            $unexcused = $records->where('is_excused', false)->count();
+
+            $traineeStats[] = [
+                'user' => $user,
+                'total' => $total,
+                'excused' => $excused,
+                'unexcused' => $unexcused,
+                'percentage' => $total > 0 ? round(($excused / $total) * 100, 1) : 0,
+            ];
+        }
+
+        $stats[] = [
+            'module' => $module,
+            'traineeStats' => $traineeStats
+        ];
+    }
+
+    return view('admin.absences.stats', [
+    'totalAbsences' => $totalAbsences,
+    'absencesByModule' => $absencesByModule,
+    'absencesPerMonth' => $absencesPerMonth,
+    'stats' => $stats,
+]);
 }
 
 public function calendar()
@@ -139,9 +160,10 @@ public function calendar()
 
     $events = $absences->map(function ($absence) {
         return [
-            'title' => $absence->user->name . ' - ' . $absence->module->name,
+            'title' => optional($absence->user)->name . ' - ' . optional($absence->module)->name,
             'start' => $absence->date,
             'url'   => route('admin.absences.show', $absence->id),
+            'color' => $absence->is_excused ? '#34d399' : '#f87171', // green = excused, red = unexcused
         ];
     });
 
@@ -149,6 +171,9 @@ public function calendar()
         'events' => $events
     ]);
 }
+
+
+
 
 
 }
