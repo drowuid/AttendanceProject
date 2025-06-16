@@ -3,7 +3,6 @@
 <head>
     <title>Trainer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 p-10">
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow p-6">
@@ -31,94 +30,110 @@
             </div>
         </div>
 
-        <!-- Chart -->
-        <div class="bg-gray-50 p-6 rounded-xl shadow mb-10">
+        <!-- Absence Chart -->
+        <div class="mt-10 bg-white p-6 rounded-2xl shadow mb-10">
             <h2 class="text-xl font-semibold mb-4">Absences Per Module</h2>
             <canvas id="moduleAbsenceChart" height="100"></canvas>
         </div>
 
+        <!-- Absence Distribution Chart -->
+<div class="mt-10 bg-white p-6 rounded-2xl shadow">
+    <h2 class="text-xl font-semibold mb-4">Absence Distribution by Module</h2>
+    <canvas id="absenceDistributionChart" height="100"></canvas>
+</div>
+
+<!-- Absences Over Time Chart -->
+<div class="mt-10 bg-white p-6 rounded-2xl shadow">
+    <h2 class="text-xl font-semibold mb-4">Absences Over Time</h2>
+    <canvas id="absencesOverTimeChart" height="100"></canvas>
+</div>
+
+<!-- Top Trainees with Most Absences Chart -->
+<div class="mt-10 bg-white p-6 rounded-2xl shadow">
+    <h2 class="text-xl font-semibold mb-4">Top 5 Trainees with Most Absences</h2>
+    <canvas id="topTraineesChart" height="150"></canvas>
+</div>
+
+
         <!-- Upcoming Modules -->
-<div class="bg-white p-6 rounded-xl shadow mb-10">
-    <h2 class="text-xl font-semibold mb-4">Upcoming Modules</h2>
+        <div class="bg-white p-6 rounded-xl shadow mb-10">
+            <h2 class="text-xl font-semibold mb-4">Upcoming Modules</h2>
 
-    @if($upcomingModules->isEmpty())
-        <p class="text-sm text-gray-500 italic">You have no upcoming modules scheduled.</p>
-    @else
-        <ul class="space-y-2">
-            @foreach($upcomingModules as $upcoming)
-                <li class="p-3 bg-gray-100 rounded-xl shadow-sm flex justify-between items-center">
-                    <div>
-                        <p class="font-semibold text-lg">{{ $upcoming->name }}</p>
-                        <p class="text-sm text-gray-600">
-                            {{ \Carbon\Carbon::parse($upcoming->start_date)->format('M d, Y') }}
-                            →
-                            {{ \Carbon\Carbon::parse($upcoming->end_date)->format('M d, Y') }}
-                        </p>
-                    </div>
-                    <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-                        Starts in {{ \Carbon\Carbon::parse($upcoming->start_date)->diffInDays(now()) }} days
-                    </span>
-                </li>
-            @endforeach
-        </ul>
-    @endif
-</div>
+            @if($upcomingModules->isEmpty())
+                <p class="text-sm text-gray-500 italic">You have no upcoming modules scheduled.</p>
+            @else
+                <ul class="space-y-2">
+                    @foreach($upcomingModules as $upcoming)
+                        <li class="p-3 bg-gray-100 rounded-xl shadow-sm flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg">{{ $upcoming->name }}</p>
+                                <p class="text-sm text-gray-600">
+                                    {{ \Carbon\Carbon::parse($upcoming->start_date)->format('M d, Y') }}
+                                    →
+                                    {{ \Carbon\Carbon::parse($upcoming->end_date)->format('M d, Y') }}
+                                </p>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                Starts in {{ \Carbon\Carbon::parse($upcoming->start_date)->diffInDays(now()) }} days
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
 
-<!-- Trainee Absence Summary -->
-<div class="bg-white p-6 rounded-xl shadow mb-10">
-    <h2 class="text-xl font-semibold mb-4">Trainee Absence Summary</h2>
+        <!-- Trainee Absence Summary -->
+        <div class="bg-white p-6 rounded-xl shadow mb-10">
+            <h2 class="text-xl font-semibold mb-4">Trainee Absence Summary</h2>
 
-    @if($traineeAbsenceSummary->isEmpty())
-        <p class="text-sm text-gray-500 italic">No absences recorded yet.</p>
-    @else
-        <ul class="divide-y divide-gray-200">
-            @foreach($traineeAbsenceSummary as $summary)
-                <li class="py-3 flex justify-between items-center">
-                    <div>
-                        <p class="font-semibold text-lg">
-                            {{ $summary['trainee']?->name ?? 'Unknown Trainee' }}
-                        </p>
-                        <p class="text-sm text-gray-500">
-                            Email: {{ $summary['trainee']?->email ?? '-' }}
-                        </p>
-                    </div>
-                    <span class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full">
-                        {{ $summary['absences'] }} Absences
-                    </span>
-                </li>
-            @endforeach
-        </ul>
-    @endif
-</div>
+            @if($traineeAbsenceSummary->isEmpty())
+                <p class="text-sm text-gray-500 italic">No absences recorded yet.</p>
+            @else
+                <ul class="divide-y divide-gray-200">
+                    @foreach($traineeAbsenceSummary as $summary)
+                        <li class="py-3 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg">
+                                    {{ $summary['trainee']?->name ?? 'Unknown Trainee' }}
+                                </p>
+                                <p class="text-sm text-gray-500">
+                                    Email: {{ $summary['trainee']?->email ?? '-' }}
+                                </p>
+                            </div>
+                            <span class="text-sm bg-red-100 text-red-700 px-3 py-1 rounded-full">
+                                {{ $summary['absences'] }} Absences
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
 
-<!-- Recent Absences Timeline -->
-<div class="bg-white p-6 rounded-xl shadow mb-10">
-    <h2 class="text-xl font-semibold mb-4">Recent Absences</h2>
+        <!-- Recent Absences Timeline -->
+        <div class="bg-white p-6 rounded-xl shadow mb-10">
+            <h2 class="text-xl font-semibold mb-4">Recent Absences</h2>
 
-    @if($recentAbsences->isEmpty())
-        <p class="text-sm text-gray-500 italic">No recent absences recorded.</p>
-    @else
-        <ul class="space-y-4">
-            @foreach($recentAbsences as $absence)
-                <li class="flex justify-between items-start border-l-4 border-red-400 pl-4">
-                    <div>
-                        <p class="font-semibold">{{ $absence->trainee?->name ?? 'Unknown Trainee' }}</p>
-                        <p class="text-sm text-gray-600">
-                            Module: {{ $absence->module?->name ?? 'Unknown' }}
-                        </p>
-                        <p class="text-xs text-gray-400">
-                            {{ \Carbon\Carbon::parse($absence->date)->format('d M Y') }}
-                        </p>
-                    </div>
-                    <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Absent</span>
-                </li>
-            @endforeach
-        </ul>
-    @endif
-</div>
-
-
-
+            @if($recentAbsences->isEmpty())
+                <p class="text-sm text-gray-500 italic">No recent absences recorded.</p>
+            @else
+                <ul class="space-y-4">
+                    @foreach($recentAbsences as $absence)
+                        <li class="flex justify-between items-start border-l-4 border-red-400 pl-4">
+                            <div>
+                                <p class="font-semibold">{{ $absence->trainee?->name ?? 'Unknown Trainee' }}</p>
+                                <p class="text-sm text-gray-600">
+                                    Module: {{ $absence->module?->name ?? 'Unknown' }}
+                                </p>
+                                <p class="text-xs text-gray-400">
+                                    {{ \Carbon\Carbon::parse($absence->date)->format('d M Y') }}
+                                </p>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Absent</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
 
         <!-- Module Attendance Table -->
         @if($modules->count() === 0)
@@ -180,32 +195,156 @@
         @endif
     </div>
 
-    <!-- Chart Script -->
+    <!-- Chart Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('moduleAbsenceChart').getContext('2d');
-        new Chart(ctx, {
+        const moduleAbsenceCtx = document.getElementById('moduleAbsenceChart').getContext('2d');
+        new Chart(moduleAbsenceCtx, {
             type: 'bar',
             data: {
                 labels: {!! json_encode($absencesPerModule->keys()) !!},
                 datasets: [{
-                    label: 'Absences',
-                    data: {!! json_encode($absencesPerModule->values()) !!},
-                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                    borderColor: 'rgba(59, 130, 246, 1)',
-                    borderWidth: 1,
-                    borderRadius: 6,
-                }]
+const moduleAbsenceCtx = document.getElementById('moduleAbsenceChart').getContext('2d');
+new Chart(moduleAbsenceCtx, {
+    type: 'bar',
+    data: {
+        labels: {!! json_encode($absencesPerModule->keys()) !!},
+        datasets: [{
+            label: 'Absences',
+            data: {!! json_encode($absencesPerModule->values()) !!},
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            borderColor: 'rgba(59, 130, 246, 1)',
+            borderWidth: 1,
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+        datasets: [{
+            data: {!! json_encode($absencesPerModule->values()) !!},
+            backgroundColor: [
+                '#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80'
+            ],
+            borderWidth: 1,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
             },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        stepSize: 1
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const label = context.label || '';
+                        const value = context.raw;
+                        const total = context.chart._metasets[0].total;
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return `${label}: ${value} (${percentage}%)`;
                     }
                 }
             }
-        });
+        }
+    }
+});
+
+const absencesOverTimeCtx = document.getElementById('absencesOverTimeChart').getContext('2d');
+new Chart(absencesOverTimeCtx, {
+    type: 'line',
+    data: {
+        labels: {!! json_encode($absencesOverTime->keys()) !!},
+        datasets: [{
+            label: 'Absences',
+            data: {!! json_encode($absencesOverTime->values()) !!},
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: '#3B82F6',
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Month'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Number of Absences'
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            }
+        }
+    }
+});
+
+const topTraineesCtx = document.getElementById('topTraineesChart').getContext('2d');
+new Chart(topTraineesCtx, {
+    type: 'bar',
+    data: {
+        labels: {!! json_encode($topTrainees->keys()) !!},
+        datasets: [{
+            label: 'Number of Absences',
+            data: {!! json_encode($topTrainees->values()) !!},
+            backgroundColor: '#F87171',
+            borderRadius: 6,
+            barThickness: 30,
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.label}: ${context.raw} absences`;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Absences'
+                }
+            },
+            y: {
+                title: {
+                    display: false
+                }
+            }
+        }
+    }
+});
+
+
+
     </script>
 </body>
 </html>

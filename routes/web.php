@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TrainerController; 
+use App\Http\Controllers\TrainerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
@@ -11,7 +11,7 @@ use App\Http\Controllers\TrainerReportController;
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Admin\AbsenceController as AdminAbsenceController;
 use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
-use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Trainer\DashboardController as TrainerDashboardController;
 
 Route::get('/', function () {
@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     // Trainer module reports
     Route::get('/trainer/module-reports', [TrainerReportController::class, 'index'])->name('trainer.moduleReports');
     Route::get('/trainer/module-reports/{module}', [TrainerReportController::class, 'show'])->name('trainer.moduleReports.show');
-    
+
 
     Route::get('/trainee/attendance', [AttendanceController::class, 'create'])->name('trainee.attendance.create');
     Route::post('/trainee/attendance', [AttendanceController::class, 'store'])->name('trainee.attendance.store');
@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
         Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
         Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');
-        
+
 
     });
     // Admin dashboard route

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Trainer;
@@ -9,6 +9,7 @@ use App\Models\Module;
 use App\Models\Course;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Routing\Controller;
 
 class AdminDashboardController extends Controller
 {
@@ -28,28 +29,33 @@ class AdminDashboardController extends Controller
     $modulesCount = Module::count();
 
     // Absences per module
-    $absencesPerModule = DB::table('absences')
-        ->join('modules', 'absences.module_id', '=', 'modules.id')
-        ->select('modules.name as module', DB::raw('count(*) as total'))
-        ->groupBy('modules.name')
-        ->pluck('total', 'module')
-        ->toArray();
+    $absencesPerModuleRaw = DB::table('absences')
+    ->join('modules', 'absences.module_id', '=', 'modules.id')
+    ->select('modules.name as module', DB::raw('count(*) as total'))
+    ->groupBy('modules.name')
+    ->get();
 
-    $absenceChartLabels = []; // e.g. ['Jan', 'Feb', 'Mar', ...]
-    $absenceChartData = [];   // e.g. [3, 5, 2, ...]
+$absenceModuleLabels = $absencesPerModuleRaw->pluck('module')->toArray();
+$absenceModuleData = $absencesPerModuleRaw->pluck('total')->toArray();
 
-    return view('admin.dashboard', compact(
-        'userCount',
-        'trainerCount',
-        'traineesCount',
-        'absenceCount',
-        'absencesCount',
-        'moduleCount',
-        'modulesCount',
-        'courseCount',
-        'activeSessions',
-        'absenceChartLabels',
-        'absenceChartData'
-    ));
+// Ensure required variables for older chart exist (even if empty)
+$absenceChartLabels = [];
+$absenceChartData = [];
+
+return view('admin.dashboard', compact(
+    'userCount',
+    'trainerCount',
+    'traineesCount',
+    'absenceCount',
+    'absencesCount',
+    'moduleCount',
+    'modulesCount',
+    'courseCount',
+    'activeSessions',
+    'absenceChartLabels',
+    'absenceChartData',
+    'absenceModuleLabels',
+    'absenceModuleData',
+));
 }
 }
