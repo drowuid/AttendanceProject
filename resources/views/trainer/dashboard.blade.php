@@ -4,61 +4,91 @@
     <title>Trainer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 p-10">
-    <div class="max-w-7xl mx-auto bg-white rounded-xl shadow p-6">
-        <h1 class="text-3xl font-bold mb-6">Trainer Dashboard</h1>
+<body class="bg-gray-100 min-h-screen">
+    <div class="max-w-7xl mx-auto py-10 px-4">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800">Trainer Dashboard</h1>
 
-        <!-- Links -->
-        <a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm mb-4 inline-block">View Course Calendar</a>
-        <a href="{{ route('trainer.reports') }}" class="text-blue-600 underline ml-4 text-sm">View Reports</a>
+        <!-- Top Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center">
+                <div class="text-gray-500 text-sm mb-2">Modules</div>
+                <div class="text-3xl font-bold text-blue-600">{{ $totalModules }}</div>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center">
+                <div class="text-gray-500 text-sm mb-2">Absences</div>
+                <div class="text-3xl font-bold text-red-500">{{ $totalTrainerAbsences }}</div>
+            </div>
+            <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center">
+                <div class="text-gray-500 text-sm mb-2">Trainees</div>
+                <div class="text-3xl font-bold text-green-600">{{ $uniqueTrainees }}</div>
+            </div>
+            
+        </div>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 mt-6">
-            <div class="bg-gray-100 p-4 rounded-xl shadow">
+        <!-- Quick Links -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            <a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm">View Course Calendar</a>
+            <a href="{{ route('trainer.reports') }}" class="text-blue-600 underline text-sm">View Reports</a>
+        </div>
+
+        <!-- My Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-blue-50 p-6 rounded-xl shadow flex flex-col items-center">
                 <h2 class="text-lg font-semibold mb-2">My Trainees</h2>
-                <p class="text-3xl font-bold">{{ $traineesCount }}</p>
+                <p class="text-3xl font-bold text-blue-700">{{ $traineesCount }}</p>
             </div>
-
-            <div class="bg-gray-100 p-4 rounded-xl shadow">
+            <div class="bg-green-50 p-6 rounded-xl shadow flex flex-col items-center">
                 <h2 class="text-lg font-semibold mb-2">My Modules</h2>
-                <p class="text-3xl font-bold">{{ $modulesCount }}</p>
+                <p class="text-3xl font-bold text-green-700">{{ $modulesCount }}</p>
             </div>
-
-            <div class="bg-gray-100 p-4 rounded-xl shadow">
+            <div class="bg-red-50 p-6 rounded-xl shadow flex flex-col items-center">
                 <h2 class="text-lg font-semibold mb-2">Total Absences</h2>
-                <p class="text-3xl font-bold">{{ $absencesCount }}</p>
+                <p class="text-3xl font-bold text-red-700">{{ $absencesCount }}</p>
             </div>
         </div>
 
-        <!-- Absence Chart -->
-        <div class="mt-10 bg-white p-6 rounded-2xl shadow mb-10">
-            <h2 class="text-xl font-semibold mb-4">Absences Per Module</h2>
-            <canvas id="moduleAbsenceChart" height="100"></canvas>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h2 class="text-xl font-semibold mb-4">Absences Per Module</h2>
+                <canvas id="moduleAbsenceChart" height="100"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h2 class="text-xl font-semibold mb-4">Absence Distribution by Module</h2>
+                <canvas id="absenceDistributionChart" height="100"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h2 class="text-xl font-semibold mb-4">Absences Over Time</h2>
+                <canvas id="absencesOverTimeChart" height="100"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <h2 class="text-xl font-semibold mb-4">Absences by Reason</h2>
+                <canvas id="absenceReasonChart" width="400" height="400"></canvas>
+            </div>
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Weekly Absences</h2>
+    <canvas id="weeklyAbsencesChart" height="100"></canvas>
+
+    <div class="bg-white p-4 rounded-xl shadow-md">
+    <div class="text-gray-500 text-sm">Absences This Week</div>
+    <div class="text-2xl font-semibold text-red-600">{{ $weeklyAbsencesCount }}</div>
+</div>
+
+    <div class="bg-white rounded-2xl shadow p-4 w-full md:w-1/2">
+    <h3 class="text-lg font-semibold text-gray-700 mb-2">Absences by Type</h3>
+    <canvas id="absenceTypeChart" height="200"></canvas>
+</div>
+    
+</div>
+            <div class="bg-white p-6 rounded-2xl shadow lg:col-span-2">
+                <h2 class="text-xl font-semibold mb-4">Top 5 Trainees with Most Absences</h2>
+                <canvas id="topTraineesChart" height="150"></canvas>
+            </div>
         </div>
-
-        <!-- Absence Distribution Chart -->
-<div class="mt-10 bg-white p-6 rounded-2xl shadow">
-    <h2 class="text-xl font-semibold mb-4">Absence Distribution by Module</h2>
-    <canvas id="absenceDistributionChart" height="100"></canvas>
-</div>
-
-<!-- Absences Over Time Chart -->
-<div class="mt-10 bg-white p-6 rounded-2xl shadow">
-    <h2 class="text-xl font-semibold mb-4">Absences Over Time</h2>
-    <canvas id="absencesOverTimeChart" height="100"></canvas>
-</div>
-
-<!-- Top Trainees with Most Absences Chart -->
-<div class="mt-10 bg-white p-6 rounded-2xl shadow">
-    <h2 class="text-xl font-semibold mb-4">Top 5 Trainees with Most Absences</h2>
-    <canvas id="topTraineesChart" height="150"></canvas>
-</div>
-
 
         <!-- Upcoming Modules -->
         <div class="bg-white p-6 rounded-xl shadow mb-10">
             <h2 class="text-xl font-semibold mb-4">Upcoming Modules</h2>
-
             @if($upcomingModules->isEmpty())
                 <p class="text-sm text-gray-500 italic">You have no upcoming modules scheduled.</p>
             @else
@@ -85,7 +115,6 @@
         <!-- Trainee Absence Summary -->
         <div class="bg-white p-6 rounded-xl shadow mb-10">
             <h2 class="text-xl font-semibold mb-4">Trainee Absence Summary</h2>
-
             @if($traineeAbsenceSummary->isEmpty())
                 <p class="text-sm text-gray-500 italic">No absences recorded yet.</p>
             @else
@@ -109,10 +138,38 @@
             @endif
         </div>
 
+        <!-- Latest Absences Table -->
+        <div class="bg-white rounded-2xl shadow p-6 mb-10">
+            <h2 class="text-xl font-semibold mb-4">Latest Absences</h2>
+            <table class="min-w-full text-sm text-left text-gray-700">
+                <thead class="text-xs uppercase bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3">Trainee</th>
+                        <th class="px-4 py-3">Module</th>
+                        <th class="px-4 py-3">Date</th>
+                        <th class="px-4 py-3">Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($latestAbsences as $absence)
+                        <tr class="bg-white border-b">
+                            <td class="px-4 py-3">{{ $absence->attendance->trainee->name ?? '—' }}</td>
+                            <td class="px-4 py-3">{{ $absence->module->name ?? '—' }}</td>
+                            <td class="px-4 py-3">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
+                            <td class="px-4 py-3">{{ $absence->reason ?? '—' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-4 py-3 text-center">No recent absences</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
         <!-- Recent Absences Timeline -->
         <div class="bg-white p-6 rounded-xl shadow mb-10">
             <h2 class="text-xl font-semibold mb-4">Recent Absences</h2>
-
             @if($recentAbsences->isEmpty())
                 <p class="text-sm text-gray-500 italic">No recent absences recorded.</p>
             @else
@@ -135,14 +192,13 @@
             @endif
         </div>
 
-        <!-- Module Attendance Table -->
+        <!-- Module Attendance Tables -->
         @if($modules->count() === 0)
             <p class="text-gray-500">No modules found. Please add a module first.</p>
         @else
             @foreach($modules as $module)
-                <div class="mb-8">
-                    <h2 class="text-xl font-semibold">{{ $module->name }} ({{ $module->start_date }} - {{ $module->end_date }})</h2>
-
+                <div class="mb-8 bg-white rounded-xl shadow p-6">
+                    <h2 class="text-xl font-semibold mb-2">{{ $module->name }} ({{ $module->start_date }} - {{ $module->end_date }})</h2>
                     @if($module->attendances->count() === 0)
                         <p class="text-sm text-gray-500 italic">No attendance records for this module yet.</p>
                     @else
@@ -160,7 +216,6 @@
                                 @php
                                     $moduleDays = \Carbon\Carbon::parse($module->start_date)->diffInDays(\Carbon\Carbon::parse($module->end_date)) + 1;
                                 @endphp
-
                                 @foreach($module->attendances->groupBy('trainee_id') as $traineeId => $records)
                                     @php
                                         $trainee = $records->first()->trainee ?? null;
@@ -176,7 +231,6 @@
                                             return $carry;
                                         }, 0);
                                     @endphp
-
                                     @if($trainee)
                                         <tr class="border-t">
                                             <td class="p-2">{{ $trainee->name }}</td>
@@ -198,24 +252,162 @@
     <!-- Chart Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const moduleAbsenceCtx = document.getElementById('moduleAbsenceChart').getContext('2d');
-        new Chart(moduleAbsenceCtx, {
+        // Absences Per Module Bar Chart
+        new Chart(document.getElementById('moduleAbsenceChart').getContext('2d'), {
             type: 'bar',
             data: {
                 labels: {!! json_encode($absencesPerModule->keys()) !!},
                 datasets: [{
-const moduleAbsenceCtx = document.getElementById('moduleAbsenceChart').getContext('2d');
-new Chart(moduleAbsenceCtx, {
-    type: 'bar',
+                    label: 'Absences',
+                    data: {!! json_encode($absencesPerModule->values()) !!},
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // Absence Distribution by Module Doughnut Chart
+        new Chart(document.getElementById('absenceDistributionChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($absencesPerModule->keys()) !!},
+                datasets: [{
+                    data: {!! json_encode($absencesPerModule->values()) !!},
+                    backgroundColor: [
+                        '#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80'
+                    ],
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Absences Over Time Line Chart
+        new Chart(document.getElementById('absencesOverTimeChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($absencesOverTime->keys()) !!},
+                datasets: [{
+                    label: 'Absences',
+                    data: {!! json_encode($absencesOverTime->values()) !!},
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#3B82F6',
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: 'Month' } },
+                    y: { beginAtZero: true, title: { display: true, text: 'Number of Absences' } }
+                },
+                plugins: {
+                    legend: { display: true, position: 'top' }
+                }
+            }
+        });
+
+        // Absences by Reason Doughnut Chart
+        new Chart(document.getElementById('absenceReasonChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($absencesByReason->keys()) !!},
+                datasets: [{
+                    label: 'Absences by Reason',
+                    data: {!! json_encode($absencesByReason->values()) !!},
+                    backgroundColor: [
+                        '#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'
+                    ],
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Top Trainees with Most Absences Horizontal Bar Chart
+        new Chart(document.getElementById('topTraineesChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: {!! json_encode($topTrainees->keys()) !!},
+                datasets: [{
+                    label: 'Number of Absences',
+                    data: {!! json_encode($topTrainees->values()) !!},
+                    backgroundColor: '#F87171',
+                    borderRadius: 6,
+                    barThickness: 30,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw} absences`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Absences' }
+                    },
+                    y: { title: { display: false } }
+                }
+            }
+        });
+
+// Weekly Absences Line Chart
+const weeklyAbsencesCtx = document.getElementById('weeklyAbsencesChart').getContext('2d');
+new Chart(weeklyAbsencesCtx, {
+    type: 'line',
     data: {
-        labels: {!! json_encode($absencesPerModule->keys()) !!},
+        labels: {!! json_encode($weeklyAbsenceCounts->keys()) !!},
         datasets: [{
             label: 'Absences',
-            data: {!! json_encode($absencesPerModule->values()) !!},
-            backgroundColor: 'rgba(59, 130, 246, 0.5)',
-            borderColor: 'rgba(59, 130, 246, 1)',
-            borderWidth: 1,
-            borderRadius: 6,
+            data: {!! json_encode($weeklyAbsenceCounts->values()) !!},
+            fill: true,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            tension: 0.4,
+            pointBackgroundColor: '#3B82F6'
         }]
     },
     options: {
@@ -224,119 +416,12 @@ new Chart(moduleAbsenceCtx, {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    stepSize: 1
+                    color: getComputedStyle(document.documentElement).classList.contains('dark') ? '#fff' : '#000'
                 }
-            }
-        }
-    }
-});
-        datasets: [{
-            data: {!! json_encode($absencesPerModule->values()) !!},
-            backgroundColor: [
-                '#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80'
-            ],
-            borderWidth: 1,
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom',
             },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        const label = context.label || '';
-                        const value = context.raw;
-                        const total = context.chart._metasets[0].total;
-                        const percentage = ((value / total) * 100).toFixed(1);
-                        return `${label}: ${value} (${percentage}%)`;
-                    }
-                }
-            }
-        }
-    }
-});
-
-const absencesOverTimeCtx = document.getElementById('absencesOverTimeChart').getContext('2d');
-new Chart(absencesOverTimeCtx, {
-    type: 'line',
-    data: {
-        labels: {!! json_encode($absencesOverTime->keys()) !!},
-        datasets: [{
-            label: 'Absences',
-            data: {!! json_encode($absencesOverTime->values()) !!},
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#3B82F6',
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
             x: {
-                title: {
-                    display: true,
-                    text: 'Month'
-                }
-            },
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Number of Absences'
-                }
-            }
-        },
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top'
-            }
-        }
-    }
-});
-
-const topTraineesCtx = document.getElementById('topTraineesChart').getContext('2d');
-new Chart(topTraineesCtx, {
-    type: 'bar',
-    data: {
-        labels: {!! json_encode($topTrainees->keys()) !!},
-        datasets: [{
-            label: 'Number of Absences',
-            data: {!! json_encode($topTrainees->values()) !!},
-            backgroundColor: '#F87171',
-            borderRadius: 6,
-            barThickness: 30,
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true,
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        return `${context.label}: ${context.raw} absences`;
-                    }
-                }
-            }
-        },
-        scales: {
-            x: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Absences'
-                }
-            },
-            y: {
-                title: {
-                    display: false
+                ticks: {
+                    color: getComputedStyle(document.documentElement).classList.contains('dark') ? '#fff' : '#000'
                 }
             }
         }
