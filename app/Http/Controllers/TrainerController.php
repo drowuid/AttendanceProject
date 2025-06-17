@@ -6,6 +6,13 @@ use App\Models\Module;
 use App\Models\Trainee;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\TrainerAbsenceStatsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Absence;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class TrainerController extends Controller
 {
@@ -46,14 +53,14 @@ class TrainerController extends Controller
         }
     }
 
-    
+
 
     return view('trainer.reports', compact('traineeStats'));
 }
 
 public function export(Request $request)
 {
-    $trainerId = auth()->id();
+    $trainerId = Auth::id();
 
     $query = Absence::with(['user', 'module'])->whereHas('module', function ($q) use ($trainerId) {
         $q->where('trainer_id', $trainerId);
@@ -78,6 +85,12 @@ public function export(Request $request)
     $pdf = Pdf::loadView('trainer.absences.pdf', compact('absences'));
 
     return $pdf->download('trainer_absences.pdf');
+}
+
+public function exportAbsenceStats()
+{
+    $trainerId = Auth::id();
+    return Excel::download(new TrainerAbsenceStatsExport($trainerId), 'trainer_absence_stats.xlsx');
 }
 
 

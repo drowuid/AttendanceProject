@@ -22,13 +22,17 @@
                 <div class="text-gray-500 text-sm mb-2">Trainees</div>
                 <div class="text-3xl font-bold text-green-600">{{ $uniqueTrainees }}</div>
             </div>
-            
+
         </div>
 
         <!-- Quick Links -->
         <div class="flex flex-wrap gap-4 mb-8">
             <a href="{{ route('calendar.index') }}" class="text-blue-600 underline text-sm">View Course Calendar</a>
             <a href="{{ route('trainer.reports') }}" class="text-blue-600 underline text-sm">View Reports</a>
+            <a href="{{ route('trainer.export.absences') }}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium">
+   Export Absence Stats
+</a>
+
         </div>
 
         <!-- My Stats Cards -->
@@ -74,17 +78,54 @@
     <div class="text-2xl font-semibold text-red-600">{{ $weeklyAbsencesCount }}</div>
 </div>
 
-    <div class="bg-white rounded-2xl shadow p-4 w-full md:w-1/2">
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">Absences by Type</h3>
-    <canvas id="absenceTypeChart" height="200"></canvas>
+    <div class="bg-white p-4 rounded-xl shadow-md">
+    <div class="text-gray-500 text-sm">Justification Rate</div>
+    <div class="text-2xl font-semibold text-indigo-600">{{ $justificationRate }}%</div>
 </div>
-    
+
+
+
 </div>
             <div class="bg-white p-6 rounded-2xl shadow lg:col-span-2">
                 <h2 class="text-xl font-semibold mb-4">Top 5 Trainees with Most Absences</h2>
                 <canvas id="topTraineesChart" height="150"></canvas>
             </div>
         </div>
+
+        <!-- Justification Rate -->
+<div class="bg-white rounded-2xl shadow p-6 w-full sm:w-1/2 lg:w-1/3">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Justification Rate</h2>
+    <div class="relative w-32 h-32 mx-auto">
+        <svg class="absolute top-0 left-0 w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+            <path
+                class="text-gray-300"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+                d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
+            />
+            <path
+                class="text-green-500"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-dasharray="{{ $justificationRate }}, 100"
+                fill="none"
+                d="M18 2a16 16 0 1 1 0 32 16 16 0 0 1 0-32"
+            />
+        </svg>
+        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+            <span class="text-xl font-bold text-gray-700">{{ $justificationRate }}%</span>
+        </div>
+    </div>
+</div>
+
+<!-- Justified vs Unjustified Absences Bar Chart -->
+<div class="bg-white rounded-2xl shadow p-6 w-full sm:w-1/2 lg:w-1/3">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Justified vs Unjustified Absences</h2>
+    <canvas id="justifiedChart" height="200"></canvas>
+</div>
+
+
 
         <!-- Upcoming Modules -->
         <div class="bg-white p-6 rounded-xl shadow mb-10">
@@ -427,6 +468,36 @@ new Chart(weeklyAbsencesCtx, {
         }
     }
 });
+
+// Justified vs Unjustified Absences Bar Chart
+const justifiedCtx = document.getElementById('justifiedChart').getContext('2d');
+    new Chart(justifiedCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Justified', 'Unjustified'],
+            datasets: [{
+                label: 'Absences',
+                data: [{{ $justifiedCount }}, {{ $unjustifiedCount }}],
+                backgroundColor: ['#34D399', '#F87171'],
+                borderRadius: 6,
+                barThickness: 40,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
 
 
 

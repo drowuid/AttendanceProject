@@ -122,6 +122,27 @@ $weeklyAbsencesCount = Absence::whereHas('module', function ($query) use ($train
             return [$date => $weeklyAbsences[$date] ?? 0];
         });
 
+        $justifiedCount = Absence::whereHas('module', function ($query) use ($trainerId) {
+        $query->where('trainer_id', $trainerId);
+    })
+    ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+    ->where('justified', true)
+    ->whereNull('deleted_at')
+    ->count();
+
+$justificationRate = $weeklyAbsencesCount > 0
+    ? round(($justifiedCount / $weeklyAbsencesCount) * 100, 1)
+    : 0;
+
+// Calculate unjustified absences for the current week
+$unjustifiedCount = Absence::whereHas('module', function ($query) use ($trainerId) {
+        $query->where('trainer_id', $trainerId);
+    })
+    ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+    ->where('justified', false)
+    ->whereNull('deleted_at')
+    ->count();
+
         // Latest absences (Absence model)
         $latestAbsences = Absence::with(['attendance.trainee', 'module'])
             ->whereHas('module', function ($query) use ($trainerId) {
@@ -176,6 +197,9 @@ $weeklyAbsencesCount = Absence::whereHas('module', function ($query) use ($train
             'weeklyAbsenceCounts' => $weeklyAbsenceCounts,
             'weeklyAbsenceLabels' => $dates->toArray(),
             'weeklyAbsencesCount' => $weeklyAbsencesCount,
+            'justificationRate' => $justificationRate,
+            'justifiedCount' => $justifiedCount,
+            'unjustifiedCount' => $unjustifiedCount,
         ]);
     }
 }

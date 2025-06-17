@@ -14,6 +14,7 @@ use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Trainer\DashboardController as TrainerDashboardController;
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -81,10 +82,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/absences/trash', [TrainerAbsenceController::class, 'trash'])->name('absences.trash');
         Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
         Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-        Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');
-
+        Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');   
 
     });
+
+    // Trainer absence stats export route
+    Route::get('/trainer/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('trainer.export.absences');
+
     // Admin dashboard route
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
