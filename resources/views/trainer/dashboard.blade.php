@@ -19,6 +19,9 @@
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
     </style>
+
+    <!-- ✅ Dark Mode Script -->
+    <script src="{{ asset('js/theme.js') }}" defer></script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
     <div class="container mx-auto p-6">

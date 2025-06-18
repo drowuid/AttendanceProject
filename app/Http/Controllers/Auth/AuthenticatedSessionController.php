@@ -11,7 +11,7 @@ class AuthenticatedSessionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => ['required','email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
@@ -20,13 +20,15 @@ class AuthenticatedSessionController extends Controller
 
             $user = Auth::user();
 
-            // Role-based redirect
-            if ($user->role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            } elseif ($user->role === 'trainer') {
-                return redirect()->intended('/trainer/dashboard');
-            } else {
-                return redirect()->intended('/trainee/dashboard');
+            // Role-based redirection
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->intended(route('admin.dashboard'));
+                case 'trainer':
+                    return redirect()->intended(route('trainer.dashboard'));
+                case 'trainee':
+                default:
+                    return redirect()->intended(route('trainee.dashboard'));
             }
         }
 

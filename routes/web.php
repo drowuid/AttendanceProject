@@ -7,7 +7,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ReportController;
-// use App\Http\Controllers\TrainerReportController;
 use App\Http\Controllers\Trainer\TrainerReportController;
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Admin\AbsenceController as AdminAbsenceController;
@@ -15,12 +14,16 @@ use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Trainer\DashboardController as TrainerDashboardController;
 use App\Http\Controllers\Trainer\TrainerStatisticsController;
+use App\Http\Controllers\HomeController;
 
 
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -40,7 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     // Trainer dashboard for authenticated users
-    // Route::get('/trainer/dashboard', [TrainerController::class, 'dashboard'])->name('trainer.dashboard');
+    Route::get('/trainer/dashboard', [TrainerController::class, 'dashboard'])->name('trainer.dashboard');
+    Route::get('/reports/pdf', [TrainerReportController::class, 'exportPdf'])->name('reports.export.pdf');
+    // Removed old /reports route, use /trainer/reports instead
+
 
     // Trainer module reports
     Route::get('/trainer/module-reports', [TrainerReportController::class, 'index'])->name('trainer.moduleReports');
@@ -51,11 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/trainee/attendance', [AttendanceController::class, 'store'])->name('trainee.attendance.store');
 
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
-
     // Trainer-only routes
     Route::middleware(['role:trainer'])->group(function () {
-        Route::get('/trainer/reports', [TrainerController::class, 'reports'])->name('trainer.reports');
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        // Updated to use TrainerReportController for reports
+        Route::get('/trainer/reports', [TrainerReportController::class, 'index'])->name('trainer.reports');
+        // Removed /reports route since views/reports folder no longer exists
+    });
     });
 
     // Absence management routes
@@ -91,6 +98,9 @@ Route::middleware('auth')->group(function () {
 
     // Trainer absence stats export route
     Route::get('/trainer/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('trainer.export.absences');
+    Route::get('/trainer/export/absence-stats/pdf', [TrainerController::class, 'exportAbsenceStatsPdf'])->name('trainer.export.absences.pdf');
+
+
 
     // Admin dashboard route
     Route::middleware(['role:admin'])->group(function () {
@@ -107,14 +117,13 @@ Route::middleware('auth')->group(function () {
 
     // Trainer reports routes
     Route::middleware(['auth', 'role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
-    Route::get('/reports', [TrainerReportController::class, 'index'])->name('reports');
+
 
     // Trainer statistics route
     Route::get('/statistics', [TrainerStatisticsController::class, 'index'])->name('statistics');
 });
 
 
-});
 
 require __DIR__.'/auth.php';
 

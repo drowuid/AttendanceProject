@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     @vite(['resources/css/app.css', 'resources/js/app.js']) {{-- If you are using Vite --}}
+     <script src="{{ asset('js/theme.js') }}" defer></script>
     {{-- Or, if you are using Laravel Mix: --}}
     {{-- <link rel="stylesheet" href="{{ mix('css/app.css') }}"> --}}
 </head>

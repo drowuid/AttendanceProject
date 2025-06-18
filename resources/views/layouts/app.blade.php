@@ -10,6 +10,8 @@
 {{-- FullCalendar CSS --}}
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
 
+<script src="{{ asset('js/theme.js') }}" defer></script>
+
 
         {{-- Fonts --}}
         <link rel="preconnect" href="https://fonts.bunny.net">
