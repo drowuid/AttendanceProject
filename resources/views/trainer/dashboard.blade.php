@@ -42,6 +42,10 @@
             <a href="{{ route('trainer.reports') }}" class="inline-flex items-center px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-sm font-medium">
                 View Reports
             </a>
+            <a href="{{ route('trainer.statistics') }}" class="inline-flex items-center px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm font-medium">
+                View Statistics
+            </a>
+
             <a href="{{ route('trainer.export.absences') }}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium">
                 Export Absence Stats
             </a>

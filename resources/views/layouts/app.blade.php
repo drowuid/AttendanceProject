@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        {{-- FullCalendar CSS --}}
+{{-- FullCalendar CSS --}}
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
 
 
@@ -33,11 +33,10 @@
 
             {{-- Page Content --}}
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
         {{-- FullCalendar JS --}}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
-
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js'></script>
     </body>
 </html>
