@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Trainer\DashboardController as TrainerDashboardController;
 
 
+
 Route::get('/', function () {
     return view('welcome');
 });

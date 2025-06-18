@@ -176,30 +176,32 @@ $unjustifiedCount = Absence::whereHas('module', function ($query) use ($trainerI
         $uniqueTrainees = $traineesCount;
 
         return view('trainer.dashboard', [
-            'modules' => $modules,
-            'traineesCount' => $traineesCount,
-            'modulesCount' => $modulesCount,
-            'absencesCount' => $absencesCount,
-            'absencesPerModule' => $absencesPerModule,
-            'upcomingModules' => $upcomingModules,
-            'traineeAbsenceSummary' => $traineeAbsenceSummary,
-            'recentAbsences' => $recentAbsences,
-            'absenceModuleLabels' => $absenceModuleLabels,
-            'absenceModuleData' => $absenceModuleData,
-            'absencesOverTime' => $absencesOverTime,
-            'topTrainees' => $topTrainees,
-            'trainer' => $trainer,
-            'totalModules' => $totalModules,
-            'totalTrainerAbsences' => $totalTrainerAbsences,
-            'uniqueTrainees' => $uniqueTrainees,
-            'latestAbsences' => $latestAbsences,
-            'absencesByReason' => $absencesByReason,
-            'weeklyAbsenceCounts' => $weeklyAbsenceCounts,
-            'weeklyAbsenceLabels' => $dates->toArray(),
-            'weeklyAbsencesCount' => $weeklyAbsencesCount,
-            'justificationRate' => $justificationRate,
-            'justifiedCount' => $justifiedCount,
-            'unjustifiedCount' => $unjustifiedCount,
-        ]);
+    'modules' => $modules,
+    'traineesCount' => $traineesCount,
+    'modulesCount' => $modulesCount,
+    'absencesCount' => $absencesCount,
+    'absencesPerModule' => $absencesPerModule,
+    'upcomingModules' => $upcomingModules,
+    'traineeAbsenceSummary' => $traineeAbsenceSummary,
+    'recentAbsences' => $recentAbsences,
+    'absenceModuleLabels' => $absenceModuleLabels,
+    'absenceModuleData' => $absenceModuleData,
+    'absencesOverTime' => $absencesOverTime,
+    'topTrainees' => $topTrainees,
+    'trainer' => $trainer,
+    'totalModules' => $modulesCount,
+    'totalAbsences' => $absencesCount, // ✔️ Fix this key
+    'totalTrainees' => $traineesCount, // ✔️ Fix this key
+    'totalAttendance' => Attendance::whereIn('module_id', $modules->pluck('id'))->count(), // ✔️ Add this
+    'latestAbsences' => $latestAbsences,
+    'absencesByReason' => $absencesByReason,
+    'weeklyAbsenceCounts' => $weeklyAbsenceCounts,
+    'weeklyAbsenceLabels' => $dates->toArray(),
+    'weeklyAbsencesCount' => $weeklyAbsencesCount,
+    'justificationRate' => $justificationRate,
+    'justifiedCount' => $justifiedCount,
+    'unjustifiedCount' => $unjustifiedCount,
+    
+]);
     }
 }
