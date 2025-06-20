@@ -13,8 +13,7 @@
             </span>
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Trainer Reports</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Complete overview of all absences with export options.
-                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Complete overview of all absences with export options.</p>
             </div>
         </div>
 
@@ -60,56 +59,60 @@
         </form>
 
         <!-- Live Search -->
-            <div class="mb-4">
-                <input id="liveSearchInput" type="text" placeholder="Search by trainee, module or reason..."
-                    class="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700" />
+        <div class="mb-4">
+            <input id="liveSearchInput" type="text" placeholder="Search by trainee, module or reason..."
+                class="w-full p-2 border rounded dark:bg-gray-900 dark:border-gray-700" />
+        </div>
+
+        <!-- Table + Pagination Container -->
+        <div id="reportTableContainer">
+            <!-- Table -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-left border-b dark:border-gray-700 text-xs uppercase text-gray-600 dark:text-gray-300">
+                            <th class="py-2">Trainee</th>
+                            <th class="py-2">Module</th>
+                            <th class="py-2">Date</th>
+                            <th class="py-2">Reason</th>
+                            <th class="py-2">Justified</th>
+                            <th class="py-2">Logged By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($absences as $absence)
+                            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="py-2">{{ $absence->trainee->name }}</td>
+                                <td class="py-2">{{ $absence->module->name }}</td>
+                                <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
+                                <td class="py-2">{{ $absence->reason }}</td>
+                                <td class="py-2">
+                                    @if ($absence->justified)
+                                        <span class="text-green-600 font-medium">Yes</span>
+                                    @else
+                                        <span class="text-red-600 font-medium">No</span>
+                                    @endif
+                                </td>
+                                <td class="py-2">{{ $absence->loggedBy->name ?? '—' }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-4 text-center text-gray-500 dark:text-gray-400">
+                                    No absences found.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
-        <!-- Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead>
-                    <tr class="text-left border-b dark:border-gray-700 text-xs uppercase text-gray-600 dark:text-gray-300">
-                        <th class="py-2">Trainee</th>
-                        <th class="py-2">Module</th>
-                        <th class="py-2">Date</th>
-                        <th class="py-2">Reason</th>
-                        <th class="py-2">Justified</th>
-                        <th class="py-2">Logged By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($absences as $absence)
-                        <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                            <td class="py-2">{{ $absence->trainee->name }}</td>
-                            <td class="py-2">{{ $absence->module->name }}</td>
-                            <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
-                            <td class="py-2">{{ $absence->reason }}</td>
-                            <td class="py-2">
-                                @if ($absence->justified)
-                                    <span class="text-green-600 font-medium">Yes</span>
-                                @else
-                                    <span class="text-red-600 font-medium">No</span>
-                                @endif
-                            </td>
-                            <td class="py-2">{{ $absence->loggedBy->name ?? '—' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="py-4 text-center text-gray-500 dark:text-gray-400">
-                                No absences found.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="mt-4">
-            {{ $absences->withQueryString()->links() }}
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $absences->withQueryString()->links() }}
+            </div>
         </div>
     </div>
+
 
     @section('scripts')
 <script>
@@ -134,6 +137,31 @@
             });
         });
     });
+</script>
+@endsection
+
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('filterForm');
+    const container = document.getElementById('reportTableContainer');
+
+    form.addEventListener('change', function () {
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData).toString();
+
+        fetch("{{ route('trainer.reports') }}?" + params, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.text())
+        .then(html => {
+            container.innerHTML = html;
+        });
+    });
+});
 </script>
 @endsection
 

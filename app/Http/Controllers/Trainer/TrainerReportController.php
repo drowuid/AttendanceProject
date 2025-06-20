@@ -34,6 +34,11 @@ class TrainerReportController extends Controller
             ->latest()
             ->paginate(10);
 
+        if ($request->ajax()) {
+            return view('trainer.reports.partials.absences', compact('absences', 'modules'));
+        }
+
+
         return view('trainer.reports.index', compact('absences', 'modules'));
     }
 

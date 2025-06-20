@@ -13,13 +13,14 @@ class Trainee extends Model
         return $this->hasMany(Attendance::class);
     }
 
-    public function modules()
+    public function absences()
 {
-    return $this->belongsToMany(\App\Models\Module::class);
+    return $this->hasMany(\App\Models\Absence::class);
 }
 
-public function absences() {
-    return $this->hasMany(\App\Models\Absence::class);
+public function modules()
+{
+    return $this->belongsToMany(\App\Models\Module::class);
 }
 
 

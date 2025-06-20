@@ -6,7 +6,6 @@ use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AbsenceController as AdminAbsenceController;
@@ -15,6 +14,8 @@ use App\Http\Controllers\Trainer\TrainerReportController;
 use App\Http\Controllers\Trainer\TrainerStatisticsController;
 use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\Trainer\TrainerTraineeController;
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -62,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     // Trainer-only routes
     Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
 
+
         // Dashboard
         Route::get('/dashboard', [TrainerDashboardController::class, 'index'])->name('dashboard');
 
@@ -89,6 +91,10 @@ Route::middleware(['auth'])->group(function () {
         // Export absence stats
         Route::get('/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('export.absences');
         Route::get('/export/absence-stats/pdf', [TrainerController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
+
+        // Trainee management
+        Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
+
     });
 });
 
