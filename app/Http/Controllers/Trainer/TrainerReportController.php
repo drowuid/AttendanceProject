@@ -58,7 +58,7 @@ public function exportPdf(Request $request)
 
 public function exportAbsenceEmailSummary()
 {
-    $trainerId = auth()->id();
+    $trainerId = Auth::id();
 
     $absences = \App\Models\Absence::with(['trainee', 'module'])
         ->whereHas('module', function($q) use ($trainerId) {
@@ -97,6 +97,54 @@ public function exportAbsenceEmailSummary()
     return response($content)
         ->header('Content-Type', 'text/plain')
         ->header('Content-Disposition', "attachment; filename=\"$filename\"");
+}
+
+
+public function exportCsv(Request $request)
+{
+    $trainerId = Auth::id();
+
+    $query = Absence::with(['trainee', 'module'])
+        ->whereHas('module', fn($q) => $q->where('trainer_id', $trainerId));
+
+    if ($request->filled('module_id')) {
+        $query->where('module_id', $request->input('module_id'));
+    }
+
+    if ($request->filled('start_date')) {
+        $query->whereDate('date', '>=', $request->start_date);
+    }
+
+    if ($request->filled('end_date')) {
+        $query->whereDate('date', '<=', $request->end_date);
+    }
+
+    $absences = $query->get();
+
+    $filename = 'absence_report_' . now()->format('Ymd_His') . '.csv';
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $callback = function () use ($absences) {
+        $handle = fopen('php://output', 'w');
+        fputcsv($handle, ['Trainee', 'Module', 'Date', 'Reason', 'Justified']);
+
+        foreach ($absences as $absence) {
+            fputcsv($handle, [
+                $absence->trainee->name ?? 'N/A',
+                $absence->module->name ?? 'N/A',
+                $absence->date,
+                $absence->reason,
+                $absence->justified ? 'Yes' : 'No'
+            ]);
+        }
+
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
 }
 
 

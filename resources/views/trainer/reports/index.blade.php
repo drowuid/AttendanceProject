@@ -5,15 +5,6 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Absence Reports</h1>
         <div class="flex gap-2">
-            <a href="{{ route('trainer.reports.export.pdf', request()->query()) }}"
-   class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">
-   Export to PDF
-</a>
-
-<a href="{{ route('trainer.absence.email.summary') }}"
-   class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium ml-2">
-   Export Email Summary
-</a>
         </div>
     </div>
 
@@ -32,8 +23,24 @@
 
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filter</button>
 
-        <a href="{{ route('trainer.export.absences') }}" class="ml-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-            Export to Excel
+        <a href="{{ route('trainer.export.absences') }}"
+            class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium">
+             Export to Excel
+        </a>
+
+        <a href="{{ route('trainer.reports.export.csv', request()->query()) }}"
+            class="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-sm font-medium">
+             Export to CSV
+        </a>
+
+        <a href="{{ route('trainer.reports.export.pdf', request()->query()) }}"
+            class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">
+             Export to PDF
+        </a>
+
+        <a href="{{ route('trainer.absence.email.summary') }}"
+            class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
+             Export Email Summary
         </a>
     </form>
 

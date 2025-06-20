@@ -45,18 +45,19 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin-only routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/absences/{absence}/edit', [AdminAbsenceController::class, 'edit'])->name('absences.edit');
-        Route::put('/absences/{absence}', [AdminAbsenceController::class, 'update'])->name('absences.update');
-        Route::delete('/absences/{absence}', [AdminAbsenceController::class, 'destroy'])->name('absences.destroy');
-        Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
-        Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
-        Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-        Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
-        Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
-        Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
-    });
+    Route::get('/absences', [AdminAbsenceController::class, 'index'])->name('absences.index');
+    Route::get('/absences/{absence}/edit', [AdminAbsenceController::class, 'edit'])->name('absences.edit');
+    Route::put('/absences/{absence}', [AdminAbsenceController::class, 'update'])->name('absences.update');
+    Route::delete('/absences/{absence}', [AdminAbsenceController::class, 'destroy'])->name('absences.destroy');
+    Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
+    Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
+    Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
+    Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
+    Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
+    Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
+});
 
     // Trainer-only routes
     Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
@@ -75,10 +76,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/absences/calendar', [TrainerAbsenceController::class, 'calendar'])->name('absences.calendar');
         Route::get('/absences/stats', [TrainerAbsenceController::class, 'stats'])->name('absences.stats');
 
-// Reports & exports
-Route::get('/reports', [TrainerReportController::class, 'index'])->name('reports');
-Route::get('/reports/pdf', [TrainerReportController::class, 'exportPdf'])->name('reports.export.pdf');
-Route::get('/absence/email-summary', [\App\Http\Controllers\Trainer\TrainerReportController::class, 'exportAbsenceEmailSummary'])->name('absence.email.summary');
+        // Reports & exports
+        Route::get('/reports', [TrainerReportController::class, 'index'])->name('reports');
+        Route::get('/reports/pdf', [TrainerReportController::class, 'exportPdf'])->name('reports.export.pdf');
+        Route::get('/absence/email-summary', [\App\Http\Controllers\Trainer\TrainerReportController::class, 'exportAbsenceEmailSummary'])->name('absence.email.summary');
+        Route::get('/reports/export/csv', [TrainerReportController::class, 'exportCsv'])->name('reports.export.csv');
+
 
         // Stats
         Route::get('/statistics', [TrainerStatisticsController::class, 'index'])->name('statistics');
@@ -89,4 +92,4 @@ Route::get('/absence/email-summary', [\App\Http\Controllers\Trainer\TrainerRepor
     });
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

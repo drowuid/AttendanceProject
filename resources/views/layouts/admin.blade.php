@@ -12,7 +12,7 @@
 <body>
     <div id="app">
         <nav>
-            <p>Admin Navigation Placeholder</p>
+
         </nav>
 
         <main>
@@ -20,7 +20,7 @@
         </main>
 
         <footer>
-            <p>Admin Footer Placeholder</p>
+
         </footer>
     </div>
 

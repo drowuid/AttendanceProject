@@ -9,6 +9,7 @@ use App\Models\Module;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 
 class AbsenceController extends Controller
@@ -62,9 +63,10 @@ class AbsenceController extends Controller
         ]);
 
         $absence->update($validated);
-
-    return redirect()->route(auth()->user()->hasRole('admin') ? 'admin.absences.index' : 'trainer.absences.index')
-        ->with('success', 'Absence updated successfully.');
+        $user = Auth::user();
+        $route = ($user && isset($user->role) && $user->role === 'admin') ? 'admin.absences.index' : 'trainer.absences.index';
+        return redirect()->route($route)
+            ->with('success', 'Absence updated successfully.');
     }
 
     public function destroy(Absence $absence)
@@ -124,8 +126,7 @@ public function stats()
 
     foreach ($modules as $module) {
         $traineeStats = [];
-
-        foreach ($module->attendances->groupBy('user_id') as $userId => $records) {
+        foreach ($module->attendances->groupBy('user_id') as $records) {
             $user = $records->first()->user;
             $total = $records->count();
             $excused = $records->where('is_excused', true)->count();
@@ -147,11 +148,8 @@ public function stats()
     }
 
     return view('admin.absences.stats', [
-    'totalAbsences' => $totalAbsences,
-    'absencesByModule' => $absencesByModule,
-    'absencesPerMonth' => $absencesPerMonth,
-    'stats' => $stats,
-]);
+        'stats' => $stats,
+    ]);
 }
 
 public function calendar()
