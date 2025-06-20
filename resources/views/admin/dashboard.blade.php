@@ -74,11 +74,15 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow p-6 h-80">
                     <h2 class="text-xl font-semibold mb-4">Absences per Month</h2>
-                    <canvas id="absenceChart" class="w-full h-full"></canvas>
+                    <div class="relative h-64 w-full">
+                        <canvas id="absenceChart" class="w-full h-full"></canvas>
+                    </div>
                 </div>
                 <div class="bg-white rounded-2xl shadow p-6 h-80">
                     <h2 class="text-xl font-semibold mb-4">Absences per Module</h2>
-                    <canvas id="absenceModuleChart" class="w-full h-full"></canvas>
+                    <div class="relative h-64 w-full">
+                        <canvas id="absenceModuleChart" class="w-full h-full"></canvas>
+                    </div>
                 </div>
             </div>
         </main>
@@ -104,7 +108,7 @@
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,

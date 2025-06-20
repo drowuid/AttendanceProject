@@ -19,10 +19,18 @@ class TrainerReportController extends Controller
         $modules = Module::where('trainer_id', $trainerId)->get();
 
         $absences = Absence::with(['trainee', 'module'])
-            ->whereHas('module', fn($q) => $q->where('trainer_id', $trainerId))
-            ->when($request->module_id, fn($q) => $q->where('module_id', $request->module_id))
-            ->when($request->start_date, fn($q) => $q->whereDate('date', '>=', $request->start_date))
-            ->when($request->end_date, fn($q) => $q->whereDate('date', '<=', $request->end_date))
+            ->whereHas('module', function($q) use ($trainerId) {
+                $q->where('trainer_id', $trainerId);
+            })
+            ->when($request->module_id, function($q) use ($request) {
+                return $q->where('module_id', $request->module_id);
+            })
+            ->when($request->start_date, function($q) use ($request) {
+                return $q->whereDate('date', '>=', $request->start_date);
+            })
+            ->when($request->end_date, function($q) use ($request) {
+                return $q->whereDate('date', '<=', $request->end_date);
+            })
             ->latest()
             ->paginate(10);
 
