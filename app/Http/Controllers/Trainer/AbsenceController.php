@@ -8,6 +8,7 @@ use App\Models\Module;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 
 class AbsenceController extends Controller
 {
@@ -153,6 +154,50 @@ public function stats()
             'absencesPerMonth'
         ));
     }
+
+public function exportAbsenceEmailSummary()
+{
+    $trainerId = auth()->id();
+
+    $absences = Absence::with(['trainee', 'module'])
+        ->whereHas('module', fn($q) => $q->where('trainer_id', $trainerId))
+        ->get();
+
+    if ($absences->isEmpty()) {
+        return back()->with('error', 'No absence data found.');
+    }
+
+    $summary = [];
+    $summary[] = "Trainer Absence Summary Report";
+    $summary[] = "Generated on: " . now()->format('Y-m-d H:i');
+    $summary[] = "----------------------------------------";
+
+    $total = $absences->count();
+    $justified = $absences->where('justified', true)->count();
+    $unjustified = $total - $justified;
+
+    $summary[] = "Total Absences: $total";
+    $summary[] = "Justified: $justified";
+    $summary[] = "Unjustified: $unjustified";
+    $summary[] = "";
+
+    $byModule = $absences->groupBy('module.name');
+    foreach ($byModule as $module => $records) {
+        $summary[] = "Module: $module";
+        $summary[] = "- Absences: " . $records->count();
+        $summary[] = "- Justified: " . $records->where('justified', true)->count();
+        $summary[] = "- Unjustified: " . $records->where('justified', false)->count();
+        $summary[] = "";
+    }
+
+    $filename = 'absence_summary_' . now()->format('Ymd_His') . '.txt';
+    $filePath = storage_path('app/public/' . $filename);
+
+    file_put_contents($filePath, implode(PHP_EOL, $summary));
+
+    return response()->download($filePath)->deleteFileAfterSend(true);
+}
+
 
 
 }

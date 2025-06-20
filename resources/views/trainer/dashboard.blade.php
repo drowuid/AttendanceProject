@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trainer Dashboard</title>
@@ -20,9 +21,8 @@
         }
     </style>
 
-    <!-- ✅ Dark Mode Script -->
-    <script src="{{ asset('js/theme.js') }}" defer></script>
 </head>
+
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
     <div class="container mx-auto p-6">
         <div class="flex items-center gap-3 mb-8">
@@ -35,9 +35,14 @@
             <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Trainer Dashboard</h1>
             <p class="text-gray-500 dark:text-gray-400 text-base mt-1">Welcome back! Here’s an overview of your course and trainee stats.</p>
             </div>
+            <form method="POST" action="{{ route('logout') }}" class="ml-auto">
+                @csrf
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">
+                    Logout
+                </button>
+            </form>
         </div>
 
-        <!-- Quick Links Sidebar -->
         <div class="flex flex-wrap gap-4 mb-8">
             <a href="{{ route('calendar.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm font-medium">
                 View Course Calendar
@@ -52,23 +57,28 @@
             <a href="{{ route('trainer.export.absences') }}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium">
                 Export Absence Stats
             </a>
+
+<a href="{{ route('trainer.absence.email.summary') }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 text-sm font-medium">
+    Export Email Summary
+</a>
         </div>
+        
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center transition-card">
-                <div class="text-4xl font-bold text-blue-600">{{ $totalAbsences }}</div>
+                <div class="text-4xl font-bold text-blue-600">{{ $totalAbsences ?? 0 }}</div>
                 <div class="text-sm text-gray-500">Total Absences</div>
             </div>
             <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center transition-card">
-                <div class="text-4xl font-bold text-green-600">{{ $totalTrainees }}</div>
+                <div class="text-4xl font-bold text-green-600">{{ $totalTrainees ?? 0 }}</div>
                 <div class="text-sm text-gray-500">Trainees</div>
             </div>
             <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center transition-card">
-                <div class="text-4xl font-bold text-red-500">{{ $totalModules }}</div>
+                <div class="text-4xl font-bold text-red-500">{{ $totalModules ?? 0 }}</div>
                 <div class="text-sm text-gray-500">Modules</div>
             </div>
             <div class="bg-white rounded-2xl shadow p-6 flex flex-col items-center transition-card">
-                <div class="text-4xl font-bold text-indigo-600">{{ $totalAttendance }}</div>
+                <div class="text-4xl font-bold text-indigo-600">{{ $totalAttendance ?? 0 }}</div>
                 <div class="text-sm text-gray-500">Attendance Logs</div>
             </div>
         </div>
@@ -114,27 +124,39 @@
                 Recent Absences
             </h2>
             <ul>
-                @foreach ($recentAbsences as $absence)
+                @forelse ($recentAbsences ?? [] as $absence)
                     <li class="border-b py-2 flex justify-between transition-card">
-                        <span>{{ $absence->trainee->name }}</span>
-                        <span class="text-gray-500">{{ $absence->date }}</span>
+                        <span>{{ $absence->trainee->name ?? 'Unknown' }}</span>
+                        <span class="text-gray-500">{{ $absence->date ?? '' }}</span>
                     </li>
-                @endforeach
+                @empty
+                    <li class="py-2 text-gray-400">No recent absences found.</li>
+                @endforelse
             </ul>
         </div>
     </div>
 
-<!-- Chart Scripts -->
+<!-- Chart.js Library -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-    // Absences Per Module Bar Chart
-    new Chart(document.getElementById('moduleAbsenceChart').getContext('2d'), {
+document.addEventListener('DOMContentLoaded', () => {
+    const absencesPerModule = {!! json_encode($absencesPerModule ?? []) !!};
+    const absencesOverTime = {!! json_encode($absencesOverTime ?? []) !!};
+    const absencesByReason = {!! json_encode($absencesByReason ?? []) !!};
+    const topTrainees = {!! json_encode($topTrainees ?? []) !!};
+    const weeklyAbsenceCounts = {!! json_encode($weeklyAbsenceCounts ?? []) !!};
+    const justifiedCount = {{ $justifiedCount ?? 0 }};
+    const unjustifiedCount = {{ $unjustifiedCount ?? 0 }};
+
+    // Chart 1 – Absences Per Module
+    new Chart(document.getElementById('moduleAbsenceChart'), {
         type: 'bar',
         data: {
-            labels: {!! json_encode($absencesPerModule->keys()) !!},
+            labels: Object.keys(absencesPerModule),
             datasets: [{
                 label: 'Absences',
-                data: {!! json_encode($absencesPerModule->values()) !!},
+                data: Object.values(absencesPerModule),
                 backgroundColor: 'rgba(59, 130, 246, 0.5)',
                 borderColor: 'rgba(59, 130, 246, 1)',
                 borderWidth: 1,
@@ -143,178 +165,108 @@
         },
         options: {
             responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
+            plugins: {
+                legend: { display: false }
             }
         }
     });
 
-    // Absence Distribution by Module Doughnut Chart
-    new Chart(document.getElementById('absenceDistributionChart').getContext('2d'), {
+    // Chart 2 – Absence Distribution (Doughnut)
+    new Chart(document.getElementById('absenceDistributionChart'), {
         type: 'doughnut',
         data: {
-            labels: {!! json_encode($absencesPerModule->keys()) !!},
+            labels: Object.keys(absencesPerModule),
             datasets: [{
-                data: {!! json_encode($absencesPerModule->values()) !!},
-                backgroundColor: [
-                    '#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80'
-                ],
-                borderWidth: 1,
+                data: Object.values(absencesPerModule),
+                backgroundColor: ['#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80']
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.raw;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${label}: ${value} (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
+        options: { responsive: true }
     });
 
-    // Absences Over Time Line Chart
-    new Chart(document.getElementById('absencesOverTimeChart').getContext('2d'), {
+    // Chart 3 – Absences Over Time (Line)
+    new Chart(document.getElementById('absencesOverTimeChart'), {
         type: 'line',
         data: {
-            labels: {!! json_encode($absencesOverTime->keys()) !!},
+            labels: Object.keys(absencesOverTime),
             datasets: [{
                 label: 'Absences',
-                data: {!! json_encode($absencesOverTime->values()) !!},
+                data: Object.values(absencesOverTime),
+                fill: true,
                 borderColor: '#3B82F6',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#3B82F6',
+                pointBackgroundColor: '#3B82F6'
             }]
         },
-        options: {
-            responsive: true,
-            scales: {
-                x: { title: { display: true, text: 'Month' } },
-                y: { beginAtZero: true, title: { display: true, text: 'Number of Absences' } }
-            },
-            plugins: {
-                legend: { display: true, position: 'top' }
-            }
-        }
+        options: { responsive: true }
     });
 
-    // Absences by Reason Doughnut Chart
-    new Chart(document.getElementById('absenceReasonChart').getContext('2d'), {
+    // Chart 4 – Absences by Reason
+    new Chart(document.getElementById('absenceReasonChart'), {
         type: 'doughnut',
         data: {
-            labels: {!! json_encode($absencesByReason->keys()) !!},
+            labels: Object.keys(absencesByReason),
             datasets: [{
                 label: 'Absences by Reason',
-                data: {!! json_encode($absencesByReason->values()) !!},
-                backgroundColor: [
-                    '#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C'
-                ],
-                borderWidth: 1,
+                data: Object.values(absencesByReason),
+                backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C']
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'right' }
-            }
-        }
+        options: { responsive: true }
     });
 
-    // Top Trainees with Most Absences Horizontal Bar Chart
-    new Chart(document.getElementById('topTraineesChart').getContext('2d'), {
+    // Chart 5 – Top Trainees (Horizontal Bar)
+    new Chart(document.getElementById('topTraineesChart'), {
         type: 'bar',
         data: {
-            labels: {!! json_encode($topTrainees->keys()) !!},
+            labels: Object.keys(topTrainees),
             datasets: [{
                 label: 'Number of Absences',
-                data: {!! json_encode($topTrainees->values()) !!},
+                data: Object.values(topTrainees),
                 backgroundColor: '#F87171',
                 borderRadius: 6,
-                barThickness: 30,
+                barThickness: 30
             }]
         },
         options: {
             indexAxis: 'y',
             responsive: true,
             plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.label}: ${context.raw} absences`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    beginAtZero: true,
-                    title: { display: true, text: 'Absences' }
-                },
-                y: { title: { display: false } }
+                legend: { display: false }
             }
         }
     });
 
-    // Weekly Absences Line Chart
-    const weeklyAbsencesCtx = document.getElementById('weeklyAbsencesChart').getContext('2d');
-    new Chart(weeklyAbsencesCtx, {
+    // Chart 6 – Weekly Absences
+    new Chart(document.getElementById('weeklyAbsencesChart'), {
         type: 'line',
         data: {
-            labels: {!! json_encode($weeklyAbsenceCounts->keys()) !!},
+            labels: Object.keys(weeklyAbsenceCounts),
             datasets: [{
                 label: 'Absences',
-                data: {!! json_encode($weeklyAbsenceCounts->values()) !!},
-                fill: true,
+                data: Object.values(weeklyAbsenceCounts),
                 borderColor: '#3B82F6',
                 backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                fill: true,
                 tension: 0.4,
                 pointBackgroundColor: '#3B82F6'
             }]
         },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        color: getComputedStyle(document.documentElement).classList.contains('dark') ? '#fff' : '#000'
-                    }
-                },
-                x: {
-                    ticks: {
-                        color: getComputedStyle(document.documentElement).classList.contains('dark') ? '#fff' : '#000'
-                    }
-                }
-            }
-        }
+        options: { responsive: true }
     });
 
-    // Justified vs Unjustified Absences Bar Chart
-    const justifiedCtx = document.getElementById('justifiedChart').getContext('2d');
-    new Chart(justifiedCtx, {
+    // Chart 7 – Justified vs Unjustified
+    new Chart(document.getElementById('justifiedChart'), {
         type: 'bar',
         data: {
             labels: ['Justified', 'Unjustified'],
             datasets: [{
                 label: 'Absences',
-                data: [{{ $justifiedCount }}, {{ $unjustifiedCount }}],
+                data: [justifiedCount, unjustifiedCount],
                 backgroundColor: ['#34D399', '#F87171'],
-                borderRadius: 6,
                 barThickness: 40,
+                borderRadius: 6
             }]
         },
         options: {
@@ -325,13 +277,10 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
+                    ticks: { stepSize: 1 }
                 }
             }
         }
     });
+});
 </script>
-</body>
-</html>

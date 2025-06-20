@@ -4,55 +4,38 @@
 <div class="container mx-auto px-4 py-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Absence Reports</h1>
+        <div class="flex gap-2">
+            <a href="{{ route('trainer.reports.export.pdf', request()->query()) }}"
+   class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium">
+   Export to PDF
+</a>
+
+<a href="{{ route('trainer.absence.email.summary') }}"
+   class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm font-medium ml-2">
+   Export Email Summary
+</a>
+        </div>
     </div>
 
-    <form method="GET" class="flex flex-wrap items-end gap-4 mb-6">
-    <div>
-        <label for="module_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Modules</label>
-        <select name="module_id[]" multiple class="border p-2 rounded w-52 h-28 overflow-y-auto text-sm">
+    <form method="GET" class="flex flex-wrap gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+        <select name="module_id" class="border p-2 rounded w-48 dark:bg-gray-900 dark:border-gray-700">
+            <option value="">All Modules</option>
             @foreach($modules as $module)
-                <option value="{{ $module->id }}"
-                    {{ collect(request('module_id'))->contains($module->id) ? 'selected' : '' }}>
+                <option value="{{ $module->id }}" {{ request('module_id') == $module->id ? 'selected' : '' }}>
                     {{ $module->name }}
                 </option>
             @endforeach
         </select>
-    </div>
 
-    <div>
-        <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Start Date</label>
-        <input type="date" name="start_date" value="{{ request('start_date') }}" class="border p-2 rounded">
-    </div>
+        <input type="date" name="start_date" value="{{ request('start_date') }}" class="border p-2 rounded dark:bg-gray-900 dark:border-gray-700">
+        <input type="date" name="end_date" value="{{ request('end_date') }}" class="border p-2 rounded dark:bg-gray-900 dark:border-gray-700">
 
-    <div>
-        <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">End Date</label>
-        <input type="date" name="end_date" value="{{ request('end_date') }}" class="border p-2 rounded">
-    </div>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Filter</button>
 
-    <div class="flex gap-2">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Filter
-        </button>
-
-        <a href="{{ route('trainer.reports') }}"
-            class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-            Clear
-        </a>
-    </div>
-
-    <div class="ml-auto flex gap-2">
-        <a href="{{ route('reports.export.pdf', request()->query()) }}"
-            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-            Export to PDF
-        </a>
-
-        <a href="{{ route('trainer.export.absences') }}"
-            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        <a href="{{ route('trainer.export.absences') }}" class="ml-auto bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
             Export to Excel
         </a>
-    </div>
-</form>
-
+    </form>
 
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 overflow-x-auto">
         <table class="w-full text-sm">
