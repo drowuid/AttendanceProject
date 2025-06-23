@@ -62,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Trainer-only routes
     Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
+        Route::get('/trainer/trainees', [TrainerTraineeController::class, 'index'])->name('trainer.trainees.index');
+
 
 
         // Dashboard

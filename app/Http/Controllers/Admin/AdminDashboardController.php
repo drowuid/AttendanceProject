@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
-use App\Models\Trainer;
 use App\Models\Absence;
 use App\Models\Module;
 use App\Models\Course;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
+use Carbon\Carbon;
+
 
 class AdminDashboardController extends Controller
 {
@@ -35,12 +36,27 @@ class AdminDashboardController extends Controller
     ->groupBy('modules.name')
     ->get();
 
+    // If no absences exist, ensure the chart variables are set to empty arrays
+    $recentAbsentees = Absence::with(['trainee', 'module'])
+    ->latest('date')
+    ->take(5)
+    ->get();
+
 $absenceModuleLabels = $absencesPerModuleRaw->pluck('module')->toArray();
 $absenceModuleData = $absencesPerModuleRaw->pluck('total')->toArray();
 
 // Ensure required variables for older chart exist (even if empty)
 $absenceChartLabels = [];
 $absenceChartData = [];
+
+$monthlyAbsenceData = Absence::selectRaw('DATE_FORMAT(date, "%Y-%m") as month, COUNT(*) as total')
+    ->groupBy('month')
+    ->orderBy('month', 'desc')
+    ->limit(6)
+    ->get()
+    ->reverse();
+
+$recentUsers = User::latest()->take(8)->get();
 
 return view('admin.dashboard', compact(
     'userCount',
@@ -56,6 +72,9 @@ return view('admin.dashboard', compact(
     'absenceChartData',
     'absenceModuleLabels',
     'absenceModuleData',
+    'recentUsers',
+    'recentAbsentees',
+    'monthlyAbsenceData',
 ));
 }
 }

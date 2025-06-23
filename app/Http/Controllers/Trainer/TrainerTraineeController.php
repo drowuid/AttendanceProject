@@ -8,6 +8,14 @@ use App\Models\Trainee;
 
 class TrainerTraineeController extends Controller
 {
+
+    public function index()
+{
+    $trainees = \App\Models\Trainee::with('course')->paginate(10);
+    return view('trainer.trainees.index', compact('trainees'));
+}
+
+
     public function show(Trainee $trainee)
     {
         $absences = $trainee->absences()->with('module')->latest()->take(10)->get();

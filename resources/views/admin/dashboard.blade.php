@@ -4,16 +4,14 @@
     <div class="flex min-h-screen container mx-auto p-6 gap-6">
 
         <!-- Sidebar -->
-        <aside class="w-64 bg-white rounded-2xl shadow p-6 sticky top-6 h-fit">
-            <div class="mb-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <aside class="w-48 bg-white rounded-xl shadow p-4 sticky top-6 h-fit">
+            <div class="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 Quick Actions
             </div>
-            <div class="flex flex-wrap gap-4 mb-8">
-                <a href="{{ route('admin.absences.index') }}"
-                    class="inline-flex items-center px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-sm font-medium">
-                    Manage Absences
-                </a>
-            </div>
+            <a href="{{ route('admin.absences.index') }}"
+                class="block px-3 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center">
+                Manage Absences
+            </a>
         </aside>
 
         <!-- Main Content -->
@@ -85,7 +83,89 @@
                     </div>
                 </div>
             </div>
+            <!-- User Management Overview -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 mt-10">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Recent Users</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <th class="py-2">Name</th>
+                                <th class="py-2">Email</th>
+                                <th class="py-2">Role</th>
+                                <th class="py-2">Registered</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($recentUsers as $user)
+                                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="py-2">{{ $user->name }}</td>
+                                    <td class="py-2">{{ $user->email }}</td>
+                                    <td class="py-2 capitalize">{{ $user->role }}</td>
+                                    <td class="py-2">{{ $user->created_at->format('d/m/Y') }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">No recent
+                                        users found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Trainee Absences -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 mt-10">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Recent Trainee Absences</h2>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <th class="py-2">Trainee</th>
+                                <th class="py-2">Module</th>
+                                <th class="py-2">Date</th>
+                                <th class="py-2">Justified</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($recentAbsentees as $absence)
+                                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    <td class="py-2">{{ $absence->trainee->name ?? 'Unknown' }}</td>
+                                    <td class="py-2">{{ $absence->module->name ?? 'Unknown' }}</td>
+                                    <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
+                                    <td class="py-2">
+                                        @if ($absence->justified)
+                                            <span class="text-green-600 font-medium">Yes</span>
+                                        @else
+                                            <span class="text-red-600 font-medium">No</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="py-4 text-center text-gray-500 dark:text-gray-400">No absences
+                                        recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Monthly Absence Trends Chart -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6 mt-10">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Monthly Absence Trends</h2>
+                <canvas id="monthlyAbsenceChart" class="w-full h-64"></canvas>
+            </div>
+
         </main>
+
+
+
+
     </div>
 @endsection
 
@@ -147,5 +227,43 @@
                 }
             }
         });
+
+    // Monthly Absence Trends Chart
+    const ctxMonthly = document.getElementById('monthlyAbsenceChart').getContext('2d');
+    const monthlyChart = new Chart(ctxMonthly, {
+        type: 'line',
+        data: {
+            labels: {!! json_encode($monthlyAbsenceData->pluck('month')->map(fn($m) => \Carbon\Carbon::parse($m.'-01')->format('M Y'))) !!},
+            datasets: [{
+                label: 'Absences',
+                data: {!! json_encode($monthlyAbsenceData->pluck('total')) !!},
+                borderColor: '#6366F1',
+                backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                tension: 0.3,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        color: '#111'
+                    }
+                }
+            }
+        }
+    });
+
     </script>
 @endsection
