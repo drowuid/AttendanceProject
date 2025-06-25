@@ -58,8 +58,9 @@ public function isTrainee()
 
 public function modules()
 {
+
     return $this->hasMany(Module::class, 'trainer_id');
-    return $this->belongsToMany(Module::class);
+
 }
 
 public function absences()
@@ -75,6 +76,10 @@ public function trainer()
 public function course()
 {
     return $this->belongsTo(Course::class);
+}
+public function courseModules()
+{
+    return $this->hasManyThrough(Module::class, Course::class, 'id', 'course_id', 'course_id', 'id');
 }
 
 }

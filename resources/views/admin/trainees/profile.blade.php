@@ -100,8 +100,40 @@
                     </table>
 
                 </div>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mt-8">
+    <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Assigned Modules</h2>
 
+    @if(!empty($modules) && count($modules) > 0)
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+                <thead>
+                    <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                        <th class="py-2">Module</th>
+                        <th class="py-2">Trainer</th>
+                        <th class="py-2">Hours</th>
+                        <th class="py-2">Start Date</th>
+                        <th class="py-2">End Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($modules as $module)
+                        <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <td class="py-2">{{ $module->name }}</td>
+                            <td class="py-2">{{ $module->trainer->name ?? 'N/A' }}</td>
+                            <td class="py-2">{{ $module->hours }}h</td>
+                            <td class="py-2">{{ \Carbon\Carbon::parse($module->start_date)->format('d/m/Y') }}</td>
+                            <td class="py-2">{{ \Carbon\Carbon::parse($module->end_date)->format('d/m/Y') }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @else
+        <p class="text-gray-500 dark:text-gray-400">No modules found for this trainee’s course.</p>
+    @endif
+</div>
             </div>
+            
             <a href="{{ route('admin.trainees.exportProfile', $user->id) }}"
                 class="inline-block px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition text-sm font-medium">
                 Export PDF

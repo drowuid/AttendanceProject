@@ -9,5 +9,13 @@ class Course extends Model
 {
     protected $fillable = ['name', 'title', 'total_hours'];
 
+    
+    public function modules()
+{
+    return $this->hasMany(Module::class, 'course_id');
+}
+
+    
+
 }
 

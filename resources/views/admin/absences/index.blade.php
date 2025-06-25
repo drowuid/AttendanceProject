@@ -84,7 +84,7 @@
                         <td class="border p-3">{{ $absence->reason ?? '-' }}</td>
                         <td class="border p-3">
                             <div class="flex flex-wrap gap-2">
-                                <form method="POST" action="{{ route('admin.absences.update', $absence->id) }}">
+                                <form method="POST" action="{{ route('admin.absences.update', ['absence' => $absence->id]) }}">
                                     @csrf
                                     @method('PUT')
                                     <div class="flex gap-2">
@@ -94,7 +94,7 @@
                                         </select>
                                         <input type="text" name="reason" placeholder="Reason..." value="{{ $absence->reason }}"
                                                class="border p-1 rounded w-32">
-                                        <button class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+                                        <button type="submit" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
                                             Update
                                         </button>
                                     </div>
@@ -104,7 +104,9 @@
                                       onsubmit="return confirm('Are you sure?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="text-red-600 hover:underline">Delete</button>
+                                    <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition">
+                                        Delete
+                                    </button>
                                 </form>
                             </div>
                         </td>
