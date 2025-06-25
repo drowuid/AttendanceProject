@@ -17,6 +17,9 @@ use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Trainer\TrainerTraineeController;
 use App\Http\Controllers\Admin\AdminExportController;
 use App\Http\Controllers\Admin\UserRoleController;
+use App\Http\Controllers\Admin\TraineeProfileController;
+use App\Http\Controllers\Admin\AdminUserController;
+
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -48,37 +51,40 @@ Route::middleware(['auth'])->group(function () {
 
     // Admin-only routes
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/absences', [AdminAbsenceController::class, 'index'])->name('absences.index');
-    Route::get('/absences/{absence}/edit', [AdminAbsenceController::class, 'edit'])->name('absences.edit');
-    Route::put('/absences/{absence}', [AdminAbsenceController::class, 'update'])->name('absences.update');
-    Route::delete('/absences/{absence}', [AdminAbsenceController::class, 'destroy'])->name('absences.destroy');
-    Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
-    Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
-    Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-    Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
-    Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
-    Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
-    Route::get('/modules/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportModulesOverview'])->name('modules.export');
-    Route::get('/top-trainees/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportTopTrainees'])->name('admin.export.topTrainees');
-    Route::get('/export/absences-by-reason', [AdminExportController::class, 'exportAbsencesByReason'])->name('admin.export.absencesByReason');
-    Route::get('/export/justified-vs-unjustified', [AdminExportController::class, 'exportJustifiedVsUnjustified'])->name('admin.export.justifiedVsUnjustified');
-    Route::get('/export/weekly-absences', [AdminExportController::class, 'exportWeeklyAbsences'])->name('admin.export.weeklyAbsences');
+        Route::get('/absences', [AdminAbsenceController::class, 'index'])->name('absences.index');
+        Route::get('/absences/{absence}/edit', [AdminAbsenceController::class, 'edit'])->name('absences.edit');
+        Route::put('/absences/{absence}', [AdminAbsenceController::class, 'update'])->name('absences.update');
+        Route::delete('/absences/{absence}', [AdminAbsenceController::class, 'destroy'])->name('absences.destroy');
+        Route::get('/absences/trash', [AdminAbsenceController::class, 'trash'])->name('absences.trash');
+        Route::put('/absences/{id}/restore', [AdminAbsenceController::class, 'restore'])->name('absences.restore');
+        Route::delete('/absences/{id}/force', [AdminAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
+        Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
+        Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
+        Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
+        Route::get('/modules/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportModulesOverview'])->name('modules.export');
+        Route::get('/top-trainees/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportTopTrainees'])->name('admin.export.topTrainees');
+        Route::get('/export/absences-by-reason', [AdminExportController::class, 'exportAbsencesByReason'])->name('admin.export.absencesByReason');
+        Route::get('/export/justified-vs-unjustified', [AdminExportController::class, 'exportJustifiedVsUnjustified'])->name('admin.export.justifiedVsUnjustified');
+        Route::get('/export/weekly-absences', [AdminExportController::class, 'exportWeeklyAbsences'])->name('admin.export.weeklyAbsences');
+        Route::get('/trainees/{user}/profile', [\App\Http\Controllers\Admin\TraineeProfileController::class, 'show'])->name('trainees.profile');
+        Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/trainee-profile/{id}/export', [\App\Http\Controllers\Admin\TraineeProfileController::class, 'exportProfilePdf'])->name('trainees.exportProfile');
+        Route::get('/admin/absences/{absence}/edit', [App\Http\Controllers\Admin\AbsenceController::class, 'edit'])->name('admin.absences.edit');
 
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [UserRoleController::class, 'index'])->name('index');
-        Route::get('/{user}/edit-role', [UserRoleController::class, 'edit'])->name('editRole');
-        Route::put('/{user}/update-role', [UserRoleController::class, 'update'])->name('updateRole');
+
+        // User role management
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', [UserRoleController::class, 'index'])->name('index');
+            Route::get('/{user}/edit-role', [UserRoleController::class, 'edit'])->name('editRole');
+            Route::put('/{user}/update-role', [UserRoleController::class, 'update'])->name('updateRole');
+        });
     });
-});
 
 
     // Trainer-only routes
     Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
-        Route::get('/trainer/trainees', [TrainerTraineeController::class, 'index'])->name('trainer.trainees.index');
-
-
 
         // Dashboard
         Route::get('/dashboard', [TrainerDashboardController::class, 'index'])->name('dashboard');
@@ -110,10 +116,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Trainee management
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
-
     });
-
-
 });
 
 require __DIR__ . '/auth.php';

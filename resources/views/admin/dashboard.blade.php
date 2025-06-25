@@ -59,8 +59,7 @@
                         </svg>
                     </span>
                     <div>
-                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Admin Dashboard
-                        </h1>
+                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Admin Dashboard</h1>
                         <p class="text-gray-500 dark:text-gray-400 text-base mt-1">
                             Overview of platform activity and stats.
                         </p>
@@ -104,46 +103,54 @@
                 </div>
 
                 <!-- User Management Overview -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Recent Users</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left">
-                            <thead>
-                                <tr
-                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
-                                    <th class="py-2">Name</th>
-                                    <th class="py-2">Email</th>
-                                    <th class="py-2">Role</th>
-                                    <th class="py-2">Registered</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($recentUsers as $user)
-                                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="py-2">{{ $user->name }}</td>
-                                        <td class="py-2">{{ $user->email }}</td>
-                                        <td class="py-2 capitalize">{{ $user->role }}</td>
-                                        <td class="py-2">{{ $user->created_at->format('d/m/Y') }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">No
-                                            recent users found.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
+    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Recent Users</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left">
+            <thead>
+                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                    <th class="py-2">Name</th>
+                    <th class="py-2">Email</th>
+                    <th class="py-2">Role</th>
+                    <th class="py-2">Registered</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($recentUsers as $user)
+                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="py-2">
+                            @if ($user->role === 'trainee')
+                                <a href="{{ route('admin.trainees.profile', ['user' => $user->id]) }}"
+                                   class="text-blue-600 hover:underline">
+                                    {{ $user->name }}
+                                </a>
+                            @else
+                                {{ $user->name }}
+                            @endif
+                        </td>
+                        <td class="py-2">{{ $user->email }}</td>
+                        <td class="py-2 capitalize">{{ $user->role }}</td>
+                        <td class="py-2">{{ $user->created_at->format('d/m/Y') }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                            No recent users found.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                <!-- Recent Trainee Absences -->
+                <!-- ✅ Recent Trainee Absences -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Recent Trainee Absences</h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm text-left">
                             <thead>
-                                <tr
-                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
                                     <th class="py-2">Trainee</th>
                                     <th class="py-2">Module</th>
                                     <th class="py-2">Date</th>
@@ -153,10 +160,18 @@
                             <tbody>
                                 @forelse ($recentAbsentees as $absence)
                                     <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="py-2">{{ $absence->trainee->name ?? 'Unknown' }}</td>
-                                        <td class="py-2">{{ $absence->module->name ?? 'Unknown' }}</td>
-                                        <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                                        <td class="py-2">
+                                            @if ($absence->trainee)
+                                                <a href="{{ route('admin.trainees.profile', ['user' => $absence->trainee->id]) }}"
+                                                   class="text-blue-600 hover:underline">
+                                                    {{ $absence->trainee->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-gray-500">Unknown</span>
+                                            @endif
                                         </td>
+                                        <td class="py-2">{{ $absence->module->name ?? 'Unknown' }}</td>
+                                        <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
                                         <td class="py-2">
                                             @if ($absence->justified)
                                                 <span class="text-green-600 font-medium">Yes</span>
@@ -167,8 +182,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="py-4 text-center text-gray-500 dark:text-gray-400">No
-                                            absences recorded.</td>
+                                        <td colspan="4" class="py-4 text-center text-gray-500 dark:text-gray-400">No absences recorded.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
