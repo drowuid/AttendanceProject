@@ -300,6 +300,31 @@
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Reduce chart canvas height/width for all charts
+        function setChartSize(id, width = 350, height = 180) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.width = width;
+                el.height = height;
+                el.style.width = width + 'px';
+                el.style.height = height + 'px';
+            }
+        }
+
+        // List of chart IDs to resize
+        [
+            'absenceChart',
+            'absenceModuleChart',
+            'monthlyAbsenceChart',
+            'monthlyAbsenceLineChart',
+            'moduleAbsenceBarChart',
+            'justifiedChart',
+            'weeklyAbsencesChart',
+            'absenceReasonChart',
+            'topTraineesChart',
+            'attendanceTrendsChart'
+        ].forEach(id => setChartSize(id));
+
         // Absences per Month Bar Chart
         const ctx = document.getElementById('absenceChart').getContext('2d');
         new Chart(ctx, {
