@@ -2,12 +2,21 @@
 
 @section('content')
 <div class="container mx-auto p-6">
-    <h2 class="text-3xl font-extrabold mb-6 text-gray-900 dark:text-white flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-4H5v4a2 2 0 002 2h2a2 2 0 002-2zM19 17v-4h-4v4a2 2 0 002 2h2a2 2 0 002-2zM9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" />
-        </svg>
-        Manage All Absences
-    </h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-4H5v4a2 2 0 002 2h2a2 2 0 002-2zM19 17v-4h-4v4a2 2 0 002 2h2a2 2 0 002-2zM9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" />
+            </svg>
+            Manage All Absences
+        </h2>
+        <a href="{{ route('admin.dashboard') }}"
+           class="inline-flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-900 transition font-semibold">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6" />
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
 
     @if(session('success'))
         <div class="bg-green-100 text-green-800 p-4 rounded mb-6">

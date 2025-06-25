@@ -16,6 +16,7 @@ use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Trainer\TrainerTraineeController;
 use App\Http\Controllers\Admin\AdminExportController;
+use App\Http\Controllers\Admin\UserRoleController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -62,8 +63,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/modules/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportModulesOverview'])->name('modules.export');
     Route::get('/top-trainees/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportTopTrainees'])->name('admin.export.topTrainees');
     Route::get('/export/absences-by-reason', [AdminExportController::class, 'exportAbsencesByReason'])->name('admin.export.absencesByReason');
+    Route::get('/export/justified-vs-unjustified', [AdminExportController::class, 'exportJustifiedVsUnjustified'])->name('admin.export.justifiedVsUnjustified');
+    Route::get('/export/weekly-absences', [AdminExportController::class, 'exportWeeklyAbsences'])->name('admin.export.weeklyAbsences');
 
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [UserRoleController::class, 'index'])->name('index');
+        Route::get('/{user}/edit-role', [UserRoleController::class, 'edit'])->name('editRole');
+        Route::put('/{user}/update-role', [UserRoleController::class, 'update'])->name('updateRole');
+    });
 });
+
 
     // Trainer-only routes
     Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {

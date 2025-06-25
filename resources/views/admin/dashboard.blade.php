@@ -15,6 +15,10 @@
                         class="w-full block px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-xs font-medium text-center transition-all duration-150">
                         Manage Absences
                     </a>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="block px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center transition-all duration-150 mt-2">
+                        Manage Users & Roles
+                    </a>
                 </div>
                 <div>
                     <div class="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -22,15 +26,23 @@
                     </div>
                     <a href="{{ route('admin.modules.export') }}"
                         class="w-full block px-3 py-1.5 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-md text-center transition-all duration-150 mb-2">
-                        Modules CSV
+                        Modules
                     </a>
                     <a href="{{ route('admin.admin.export.topTrainees') }}"
                         class="w-full block px-3 py-1.5 text-xs font-medium text-white bg-purple-500 hover:bg-purple-600 rounded-md text-center transition-all duration-150 mb-2">
-                        Top Trainees CSV
+                        Top Trainees
                     </a>
                     <a href="{{ route('admin.admin.export.absencesByReason') }}"
                         class="w-full block px-3 py-1.5 text-xs font-medium text-white bg-pink-500 hover:bg-pink-600 rounded-md text-center transition-all duration-150">
-                        Absences by Reason CSV
+                        Absences by Reason
+                    </a>
+                    <a href="{{ route('admin.admin.export.justifiedVsUnjustified') }}"
+                        class="w-full block px-3 py-1.5 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded-md text-center transition-all duration-150 mt-2">
+                        Justified/Unjustified
+                    </a>
+                    <a href="{{ route('admin.admin.export.weeklyAbsences') }}"
+                        class="w-full block px-3 py-1.5 text-xs font-medium text-white bg-red-500 hover:bg-yellow-600 rounded-md text-center transition-all duration-150 mt-2">
+                        Weekly Absences
                     </a>
                 </div>
             </aside>
