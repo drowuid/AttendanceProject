@@ -12,7 +12,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    // public const HOME = '/dashboard'; // Remove or comment out since we use method below
+    public const HOME = '/home'; // Default, can be overridden by redirectTo()
 
     /**
      * Bootstrap any application services.
@@ -33,10 +33,11 @@ class RouteServiceProvider extends ServiceProvider
 
     /**
      * Custom redirect based on user role after login.
+     * This method can be used in LoginController or AuthenticatedSessionController.
      */
     public static function redirectTo()
     {
-        $user = auth()->user();
+        $user = \Illuminate\Support\Facades\Auth::user();
 
         if ($user && $user->role === 'trainer') {
             return '/trainer/dashboard';
@@ -44,4 +45,6 @@ class RouteServiceProvider extends ServiceProvider
 
         return '/trainee/dashboard';
     }
+
+    
 }

@@ -28,7 +28,11 @@ public function module()
 {
     return $this->belongsTo(Module::class, 'module_id');
 }
-    
+
+public function trainee()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 
 
 }

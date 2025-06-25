@@ -15,6 +15,7 @@ use App\Http\Controllers\Trainer\TrainerStatisticsController;
 use App\Http\Controllers\Trainer\AbsenceController as TrainerAbsenceController;
 use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Trainer\TrainerTraineeController;
+use App\Http\Controllers\Admin\AdminExportController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -58,6 +59,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/absences/export', [AdminAbsenceController::class, 'export'])->name('absences.export');
     Route::get('/absences/stats', [AdminAbsenceController::class, 'stats'])->name('absences.stats');
     Route::get('/absences/calendar', [AdminAbsenceController::class, 'calendar'])->name('absences.calendar');
+    Route::get('/modules/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportModulesOverview'])->name('modules.export');
+    Route::get('/top-trainees/export', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'exportTopTrainees'])->name('admin.export.topTrainees');
+    Route::get('/export/absences-by-reason', [AdminExportController::class, 'exportAbsencesByReason'])->name('admin.export.absencesByReason');
+
 });
 
     // Trainer-only routes
@@ -98,6 +103,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
 
     });
+
+
 });
 
 require __DIR__ . '/auth.php';

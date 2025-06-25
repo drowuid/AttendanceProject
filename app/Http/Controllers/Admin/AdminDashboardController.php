@@ -10,6 +10,8 @@ use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controller;
 use Carbon\Carbon;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Response;
 
 
 class AdminDashboardController extends Controller
@@ -130,9 +132,63 @@ class AdminDashboardController extends Controller
         $weeklyAbsencesFilled = array_merge($allDays->toArray(), $weeklyAbsences);
 
         $reasonCounts = Absence::select('reason', DB::raw('count(*) as total'))
-    ->groupBy('reason')
-    ->pluck('total', 'reason')
-    ->toArray();
+            ->groupBy('reason')
+            ->pluck('total', 'reason')
+            ->toArray();
+
+
+
+        $topTrainees = Absence::with('trainee')
+            ->select('user_id', DB::raw('count(*) as total'))
+            ->groupBy('user_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => optional($item->trainee)->name ?? 'Unknown',
+                    'total' => $item->total,
+                ];
+            });
+
+        // Attendance trends for the last 7 days
+        $attendanceTrends = Attendance::select(
+            DB::raw('DATE(date) as day'),
+            DB::raw("SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present"),
+            DB::raw("SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as absent"),
+            DB::raw("SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END) as late")
+        )
+            ->where('date', '>=', now()->subDays(6))
+            ->groupBy('day')
+            ->orderBy('day', 'asc')
+            ->get()
+            ->keyBy('day');
+
+        $trendDays = [];
+        $presentData = [];
+        $absentData = [];
+        $lateData = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $trendDays[] = Carbon::parse($date)->format('D');
+
+            $presentData[] = $attendanceTrends[$date]->present ?? 0;
+            $absentData[] = $attendanceTrends[$date]->absent ?? 0;
+            $lateData[] = $attendanceTrends[$date]->late ?? 0;
+        }
+
+        $modulesOverview = Module::withCount([
+            'absences as total_absences',
+            'absences as justified_absences' => function ($query) {
+                $query->where('justified', true);
+            },
+            'absences as unjustified_absences' => function ($query) {
+                $query->where('justified', false);
+            }
+        ])
+            ->withCount(['trainees'])
+            ->get();
 
         $recentUsers = User::latest()->take(8)->get();
 
@@ -165,6 +221,88 @@ class AdminDashboardController extends Controller
             'justifiedAbsences',
             'weeklyAbsences',
             'reasonCounts',
+            'topTrainees',
+            'trendDays',
+            'presentData',
+            'absentData',
+            'lateData',
+            'modulesOverview',
         ));
     }
+
+    public function exportModulesOverview(): StreamedResponse
+{
+    $filename = 'modules_attendance_overview_' . now()->format('Ymd_His') . '.csv';
+
+    $modules = Module::withCount([
+        'absences as total_absences',
+        'absences as justified_absences' => function ($query) {
+            $query->where('justified', true);
+        },
+        'absences as unjustified_absences' => function ($query) {
+            $query->where('justified', false);
+        },
+        'trainees'
+    ])->get();
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => "attachment; filename=\"$filename\"",
+    ];
+
+    $columns = ['Module', 'Trainees', 'Total Absences', 'Justified', 'Unjustified'];
+
+    $callback = function () use ($modules, $columns) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $columns);
+
+        foreach ($modules as $module) {
+            fputcsv($file, [
+                $module->name,
+                $module->trainees_count,
+                $module->total_absences,
+                $module->justified_absences,
+                $module->unjustified_absences,
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
+public function exportTopTrainees(): StreamedResponse
+{
+    $topTrainees = Absence::with('trainee')
+        ->select('user_id', DB::raw('count(*) as total'))
+        ->groupBy('user_id')
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get()
+        ->map(function ($item) {
+            return [
+                'Trainee' => optional($item->trainee)->name ?? 'Unknown',
+                'Absences' => $item->total,
+            ];
+        });
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="top_trainees.csv"',
+    ];
+
+    $callback = function () use ($topTrainees) {
+        $handle = fopen('php://output', 'w');
+        fputcsv($handle, ['Trainee', 'Absences']);
+        foreach ($topTrainees as $row) {
+            fputcsv($handle, $row);
+        }
+        fclose($handle);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
+
 }
