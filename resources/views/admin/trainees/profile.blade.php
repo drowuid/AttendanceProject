@@ -85,14 +85,10 @@
                                             <span class="text-red-600 font-medium">No</span>
                                         @endif
 
-                                        @if (Route::has('admin.absences.edit'))
-                                            <a href="{{ route('admin.absences.edit', $absence->id) }}"
-                                                class="ml-2 inline-block px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                                                Edit
-                                            </a>
-                                        @else
-                                            <span class="ml-2 text-xs text-gray-400">Edit route missing</span>
-                                        @endif
+                                        <a href="{{ route('admin.absences.edit', $absence->id) }}"
+                                            class="ml-2 inline-block px-2 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+                                            Edit
+                                        </a>
                                     </td>
                                 @empty
                                 <tr>
