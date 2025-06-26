@@ -72,6 +72,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::get('/trainee-profile/{id}/export', [\App\Http\Controllers\Admin\TraineeProfileController::class, 'exportProfilePdf'])->name('trainees.exportProfile');
         Route::get('/admin/absences/{absence}/edit', [App\Http\Controllers\Admin\AbsenceController::class, 'edit'])->name('admin.absences.edit');
+        Route::get('/admin/trainees/{id}/export-modules', [\App\Http\Controllers\Admin\TraineeProfileController::class, 'exportModulesCsv'])->name('admin.trainees.exportModules');
+        Route::get('/admin/trainees', [\App\Http\Controllers\Admin\TraineeController::class, 'index'])->name('admin.trainees.index');
+        Route::post('/admin/trainees/{id}/assign-modules', [\App\Http\Controllers\Admin\TraineeController::class, 'assignModules'])->name('admin.trainees.assignModules');
+
 
 
         // User role management

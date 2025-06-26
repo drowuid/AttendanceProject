@@ -58,10 +58,9 @@ public function isTrainee()
 
 public function modules()
 {
-
-    return $this->hasMany(Module::class, 'trainer_id');
-
+    return $this->belongsToMany(\App\Models\Module::class);
 }
+
 
 public function absences()
 {

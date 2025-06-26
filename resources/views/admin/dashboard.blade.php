@@ -19,6 +19,11 @@
                         class="block px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center transition-all duration-150 mt-2">
                         Manage Users & Roles
                     </a>
+                    <a href="{{ route('admin.admin.trainees.index') }}"
+                        class="block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-xs font-medium text-center transition-all duration-150 mt-2">
+                        Manage Trainees
+                    </a>
+
                 </div>
                 <div>
                     <div class="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
