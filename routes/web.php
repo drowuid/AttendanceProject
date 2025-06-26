@@ -130,7 +130,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
 
     });
-    
+
     // Trainee-only routes
     Route::middleware(['auth', 'role:trainee'])
             ->prefix('trainee')
@@ -138,6 +138,10 @@ Route::middleware(['auth'])->group(function () {
             ->group(function () {
                 Route::get('/dashboard', [TraineeDashboardController::class, 'index'])->name('dashboard');
             });
+
+            Route::middleware(['auth', 'role:trainee'])->prefix('trainee')->name('trainee.')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\Trainee\ProfileController::class, 'show'])->name('profile');
+});
 });
 
 require __DIR__ . '/auth.php';
