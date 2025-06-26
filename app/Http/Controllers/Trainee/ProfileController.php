@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Trainee;
 
 use App\Http\Controllers\Controller;
@@ -11,13 +12,24 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        // Eager-load modules with trainer
         $modules = $user->modules()->with('trainer')->get();
-        $absences = $user->absences()->with('module')->get();
 
+        // Load absences with modules
+        $absences = $user->absences()->with('module')->orderBy('date', 'desc')->get();
+
+        // Calculate counts
         $totalAbsences = $absences->count();
         $justified = $absences->where('justified', true)->count();
         $unjustified = $absences->where('justified', false)->count();
 
-        return view('trainee.profile', compact('user', 'modules', 'absences', 'totalAbsences', 'justified', 'unjustified'));
+        return view('trainee.profile', compact(
+            'user',
+            'modules',
+            'absences',
+            'totalAbsences',
+            'justified',
+            'unjustified'
+        ));
     }
 }

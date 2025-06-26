@@ -7,6 +7,13 @@
         <!-- Header -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Welcome, {{ $user->name }}</h1>
+            <!-- Profile Button -->
+<div class="flex justify-end mb-4">
+    <a href="{{ route('trainee.profile') }}"
+       class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition-colors duration-150 text-sm font-medium">
+        View Profile
+    </a>
+</div>
         </div>
 
         <!-- Absence Summary -->

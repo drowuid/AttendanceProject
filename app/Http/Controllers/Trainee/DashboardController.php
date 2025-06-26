@@ -42,4 +42,18 @@ class DashboardController extends Controller
             'user', 'modules', 'absences', 'totalAbsences', 'justified', 'unjustified', 'attendanceRate'
         ));
     }
+    
+    public function modules()
+{
+    $user = Auth::user();
+
+    $modules = $user->modules()->with('trainer')->orderBy('start_date')->get();
+
+    $totalModules = $modules->count();
+    $totalHours = $modules->sum('hours');
+
+    return view('trainee.modules.index', compact('modules', 'totalModules', 'totalHours'));
+}
+
+
 }
