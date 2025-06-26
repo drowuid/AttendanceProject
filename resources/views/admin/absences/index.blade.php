@@ -77,7 +77,23 @@
             <tbody>
                 @forelse($absences as $absence)
                     <tr class="hover:bg-gray-50">
-                        <td class="border p-3">{{ $absence->user->name }}</td>
+                        <td class="border p-3">
+    @php
+        $user = $absence->user;
+    @endphp
+
+    @if($user->role === 'trainer')
+        <a href="{{ route('admin.trainers.profile', $user->id) }}" class="text-blue-600 hover:underline">
+            {{ $user->name }}
+        </a>
+    @elseif($user->role === 'trainee')
+        <a href="{{ route('admin.trainees.profile', $user->id) }}" class="text-blue-600 hover:underline">
+            {{ $user->name }}
+        </a>
+    @else
+        {{ $user->name }}
+    @endif
+</td>
                         <td class="border p-3">{{ $absence->module->name }}</td>
                         <td class="border p-3">{{ $absence->date }}</td>
                         <td class="border p-3">{{ $absence->is_excused ? 'Yes' : 'No' }}</td>

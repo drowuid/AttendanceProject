@@ -146,4 +146,17 @@ public function exportModulesCsv($id)
         'Content-Disposition' => "attachment; filename=\"$filename\"",
     ]);
 }
+
+public function assignModules($id)
+{
+    $user = User::where('role', 'trainee')->findOrFail($id);
+
+    $moduleIds = request()->input('modules', []);
+
+    // Sync assigned modules
+    $user->modules()->sync($moduleIds);
+
+    return redirect()->route('admin.admin.trainees.profile', $id)
+        ->with('success', 'Modules updated successfully.');
+}
 }

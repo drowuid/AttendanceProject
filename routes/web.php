@@ -17,8 +17,8 @@ use App\Http\Controllers\AbsenceController;
 use App\Http\Controllers\Trainer\TrainerTraineeController;
 use App\Http\Controllers\Admin\AdminExportController;
 use App\Http\Controllers\Admin\UserRoleController;
-use App\Http\Controllers\Admin\TraineeProfileController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Trainee\DashboardController as TraineeDashboardController;
 
 
 
@@ -78,6 +78,14 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+        Route::get('/trainers/{id}/profile', [\App\Http\Controllers\Admin\TrainerProfileController::class, 'show'])->name('trainers.profile');
+
+        Route::get('/trainers/{id}/export-modules', [\App\Http\Controllers\Admin\TrainerProfileController::class, 'exportModulesCsv'])->name('trainers.exportModules');
+
+        Route::get('/trainers/{id}/export-profile', [\App\Http\Controllers\Admin\TrainerProfileController::class, 'exportProfilePdf'])->name('trainers.exportProfile');
+
+
+
         // User role management
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('/', [UserRoleController::class, 'index'])->name('index');
@@ -120,7 +128,16 @@ Route::middleware(['auth'])->group(function () {
 
         // Trainee management
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
+
     });
+    
+    // Trainee-only routes
+    Route::middleware(['auth', 'role:trainee'])
+            ->prefix('trainee')
+            ->name('trainee.')
+            ->group(function () {
+                Route::get('/dashboard', [TraineeDashboardController::class, 'index'])->name('dashboard');
+            });
 });
 
 require __DIR__ . '/auth.php';

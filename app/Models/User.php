@@ -47,38 +47,45 @@ class User extends Authenticatable
     }
 
     public function isTrainer()
-{
-    return $this->role === 'trainer';
-}
+    {
+        return $this->role === 'trainer';
+    }
 
-public function isTrainee()
-{
-    return $this->role === 'trainee';
-}
+    public function isTrainee()
+    {
+        return $this->role === 'trainee';
+    }
 
-public function modules()
-{
-    return $this->belongsToMany(\App\Models\Module::class);
-}
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class);
+    }
 
 
-public function absences()
-{
-    return $this->hasMany(Absence::class);
-}
+    public function absences()
+    {
+        return $this->hasMany(Absence::class);
+    }
 
-public function trainer()
-{
-    return $this->belongsTo(User::class, 'trainer_id');
-}
+    public function trainer()
+    {
+        return $this->belongsTo(User::class, 'trainer_id');
+    }
 
-public function course()
-{
-    return $this->belongsTo(Course::class);
-}
-public function courseModules()
-{
-    return $this->hasManyThrough(Module::class, Course::class, 'id', 'course_id', 'course_id', 'id');
-}
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+    public function courseModules()
+    {
+        return $this->hasManyThrough(Module::class, Course::class, 'id', 'course_id', 'course_id', 'id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(\App\Models\Attendance::class);
+    }
+
+
 
 }

@@ -123,16 +123,19 @@
             <tbody>
                 @forelse ($recentUsers as $user)
                     <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="py-2">
-                            @if ($user->role === 'trainee')
-                                <a href="{{ route('admin.trainees.profile', ['user' => $user->id]) }}"
-                                   class="text-blue-600 hover:underline">
-                                    {{ $user->name }}
-                                </a>
-                            @else
-                                {{ $user->name }}
-                            @endif
-                        </td>
+                        <td>
+    @if ($user->role === 'trainee')
+        <a href="{{ route('admin.trainees.profile', $user->id) }}" class="text-blue-600 hover:underline font-medium">
+            {{ $user->name }}
+        </a>
+    @elseif ($user->role === 'trainer')
+        <a href="{{ route('admin.trainers.profile', $user->id) }}" class="text-blue-600 hover:underline font-medium">
+            {{ $user->name }}
+        </a>
+    @else
+        {{ $user->name }}
+    @endif
+</td>
                         <td class="py-2">{{ $user->email }}</td>
                         <td class="py-2 capitalize">{{ $user->role }}</td>
                         <td class="py-2">{{ $user->created_at->format('d/m/Y') }}</td>

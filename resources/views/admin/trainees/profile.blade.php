@@ -102,7 +102,11 @@
             <!-- Assigned Modules -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-6">
                 <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Assigned Modules</h2>
-
+@if(session('success'))
+    <div class="mb-4 text-green-600 font-semibold">
+        {{ session('success') }}
+    </div>
+@endif
                 <form method="GET" class="mb-4 flex items-center gap-3 flex-wrap">
                     <input type="text" name="module" value="{{ request('module') }}" placeholder="Search by module name"
                         class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white text-sm px-3 py-1.5 shadow-sm" />
