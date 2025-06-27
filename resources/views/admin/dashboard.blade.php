@@ -7,46 +7,46 @@
 
             <!-- Sidebar -->
             <aside
-                class="w-full lg:w-48 bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6 lg:mb-0 lg:sticky top-8 h-fit flex flex-col gap-3 text-xs">
+                class="w-full lg:w-64 bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col gap-5 text-xs sticky top-8 h-fit self-start">
                 <div>
-                    <div class="mb-1 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    <div class="mb-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                         Quick Actions
                     </div>
                     <a href="{{ route('admin.absences.index') }}"
-                        class="block px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs font-medium text-center transition-all duration-150">
+                        class="block px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs font-medium text-center transition-all duration-150">
                         Manage Absences
                     </a>
                     <a href="{{ route('admin.users.index') }}"
-                        class="block px-2 py-1 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center transition-all duration-150 mt-1">
+                        class="block px-3 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center transition-all duration-150 mt-2">
                         Manage Users & Roles
                     </a>
                     <a href="{{ route('admin.admin.trainees.index') }}"
-                        class="block px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs font-medium text-center transition-all duration-150 mt-1">
+                        class="block px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-xs font-medium text-center transition-all duration-150 mt-2">
                         Manage Trainees
                     </a>
                 </div>
                 <div>
-                    <div class="mb-1 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    <div class="mb-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                         Export Options
                     </div>
                     <a href="{{ route('admin.modules.export') }}"
-                        class="block px-2 py-1 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded text-center transition-all duration-150 mb-1">
+                        class="block px-3 py-2 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded text-center transition-all duration-150 mb-2">
                         Modules
                     </a>
                     <a href="{{ route('admin.admin.export.topTrainees') }}"
-                        class="block px-2 py-1 text-xs font-medium text-white bg-purple-500 hover:bg-purple-600 rounded text-center transition-all duration-150 mb-1">
+                        class="block px-3 py-2 text-xs font-medium text-white bg-purple-500 hover:bg-purple-600 rounded text-center transition-all duration-150 mb-2">
                         Top Trainees
                     </a>
                     <a href="{{ route('admin.admin.export.absencesByReason') }}"
-                        class="block px-2 py-1 text-xs font-medium text-white bg-pink-500 hover:bg-pink-600 rounded text-center transition-all duration-150">
+                        class="block px-3 py-2 text-xs font-medium text-white bg-pink-500 hover:bg-pink-600 rounded text-center transition-all duration-150">
                         Absences by Reason
                     </a>
                     <a href="{{ route('admin.admin.export.justifiedVsUnjustified') }}"
-                        class="block px-2 py-1 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-1">
+                        class="block px-3 py-2 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-2">
                         Justified/Unjustified
                     </a>
                     <a href="{{ route('admin.admin.export.weeklyAbsences') }}"
-                        class="block px-2 py-1 text-xs font-medium text-white bg-red-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-1">
+                        class="block px-3 py-2 text-xs font-medium text-white bg-red-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-2">
                         Weekly Absences
                     </a>
                 </div>
@@ -221,7 +221,7 @@
                     </div>
                     <!-- Top Trainees -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 flex flex-col items-center">
-                        <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Top 5 Trainees by Absences</h2>
+                        <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Top Trainees by Absences</h2>
                         <canvas id="topTraineesChart" width="180" height="100"></canvas>
                     </div>
                     <!-- Monthly Absence Trends Chart -->
@@ -230,9 +230,11 @@
                         <canvas id="monthlyAbsenceChart" width="220" height="120"></canvas>
                     </div>
                     <!-- Attendance Trends -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 flex flex-col items-center">
-                        <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Weekly Attendance Trends</h2>
-                        <canvas id="attendanceTrendsChart" width="220" height="120"></canvas>
+                    <div class="col-span-full flex justify-center">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 flex flex-col items-center">
+                            <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Weekly Attendance Trends</h2>
+                            <canvas id="attendanceTrendsChart" width="220" height="120"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -324,7 +326,14 @@
                 { id: 'weeklyAbsencesChart', width: 350, height: 180 },
                 { id: 'absenceReasonChart', width: 350, height: 180 },
                 { id: 'topTraineesChart', width: 350, height: 180 },
-                { id: 'attendanceTrendsChart', width: 350, height: 180 }
+                { id: 'attendanceTrendsChart', width: 350, height: 180 },
+                // Trainer charts
+                { id: 'trainerAbsenceChart', width: 350, height: 180 },
+                { id: 'trainerModuleChart', width: 350, height: 180 },
+                { id: 'trainerMonthlyChart', width: 350, height: 180 },
+                { id: 'trainerWeeklyChart', width: 350, height: 180 },
+                { id: 'trainerReasonChart', width: 350, height: 180 },
+                { id: 'trainerTrendsChart', width: 350, height: 180 }
             ];
 
             chartConfigs.forEach(config => {
@@ -667,6 +676,224 @@
                             {
                                 label: 'Late',
                                 data: @json($lateData),
+                                borderColor: 'rgb(234,179,8)',
+                                backgroundColor: 'rgba(234,179,8,0.1)',
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // TRAINER CHARTS - Same styling and layout as trainee charts
+
+            // Trainer Absences per Month Bar Chart
+            const trainerCtx = document.getElementById('trainerAbsenceChart');
+            if (trainerCtx) {
+                new Chart(trainerCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($trainerAbsenceLabels ?? []) !!},
+                        datasets: [{
+                            label: 'Trainer Absences',
+                            data: {!! json_encode($trainerAbsenceData ?? []) !!},
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Trainer Absences per Module Bar Chart
+            const trainerModuleCtx = document.getElementById('trainerModuleChart');
+            if (trainerModuleCtx) {
+                new Chart(trainerModuleCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($trainerModuleLabels ?? []) !!},
+                        datasets: [{
+                            label: 'Trainer Absences per Module',
+                            data: {!! json_encode($trainerModuleData ?? []) !!},
+                            backgroundColor: 'rgba(34, 197, 94, 0.5)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Trainer Monthly Absence Trends Chart
+            const trainerMonthlyCtx = document.getElementById('trainerMonthlyChart');
+            if (trainerMonthlyCtx) {
+                new Chart(trainerMonthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($trainerMonthlyLabels ?? []) !!},
+                        datasets: [{
+                            label: 'Trainer Absences',
+                            data: {!! json_encode($trainerMonthlyData ?? []) !!},
+                            borderColor: '#6366F1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    color: '#111'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Trainer Weekly Absences Bar Chart
+            const trainerWeeklyCtx = document.getElementById('trainerWeeklyChart');
+            if (trainerWeeklyCtx) {
+                new Chart(trainerWeeklyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($trainerWeeklyLabels ?? []) !!},
+                        datasets: [{
+                            label: 'Trainer Absences',
+                            data: {!! json_encode($trainerWeeklyData ?? []) !!},
+                            backgroundColor: '#6366F1',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return this.getLabelForValue(value).split('-').slice(1).join('/');
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                stepSize: 1
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Trainer Absences by Reason Chart
+            const trainerReasonCtx = document.getElementById('trainerReasonChart');
+            if (trainerReasonCtx) {
+                new Chart(trainerReasonCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: {!! json_encode(array_keys($trainerReasonCounts ?? [])) !!},
+                        datasets: [{
+                            label: 'Trainer Absences',
+                            data: {!! json_encode(array_values($trainerReasonCounts ?? [])) !!},
+                            backgroundColor: [
+                                '#6366F1', '#10B981', '#F59E0B', '#EF4444', '#3B82F6',
+                                '#8B5CF6', '#F472B6', '#22D3EE'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        ...chartOptions,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    color: '#374151',
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Trainer Attendance Trends Chart
+            const trainerTrendsCtx = document.getElementById('trainerTrendsChart');
+            if (trainerTrendsCtx) {
+                new Chart(trainerTrendsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($trainerTrendDays ?? []),
+                        datasets: [{
+                                label: 'Present',
+                                data: @json($trainerPresentData ?? []),
+                                borderColor: 'rgb(34,197,94)',
+                                backgroundColor: 'rgba(34,197,94,0.1)',
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Absent',
+                                data: @json($trainerAbsentData ?? []),
+                                borderColor: 'rgb(239,68,68)',
+                                backgroundColor: 'rgba(239,68,68,0.1)',
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Late',
+                                data: @json($trainerLateData ?? []),
                                 borderColor: 'rgb(234,179,8)',
                                 backgroundColor: 'rgba(234,179,8,0.1)',
                                 tension: 0.3

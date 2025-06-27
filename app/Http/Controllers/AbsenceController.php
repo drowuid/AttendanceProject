@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Absence;
-use App\Models\Trainee;
 
 class AbsenceController extends Controller
 {
@@ -36,7 +35,7 @@ class AbsenceController extends Controller
         ]);
 
         $absence->update([
-            'is_excused' => $request->is_excused,
+            'justified' => $request->is_excused,
             'reason' => $request->reason
         ]);
 

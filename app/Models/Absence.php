@@ -34,5 +34,9 @@ public function trainee()
     return $this->belongsTo(User::class, 'user_id');
 }
 
+public function attendance()
+{
+    return $this->belongsTo(Attendance::class);
+}
 
 }
