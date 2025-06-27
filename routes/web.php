@@ -132,7 +132,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Trainee-only routes
-    Route::middleware(['auth', 'role:trainee'])
+    Route::middleware(['role:trainee'])
         ->prefix('trainee')
         ->name('trainee.')
         ->group(function () {
@@ -141,7 +141,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/profile/export/pdf', [App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportProfilePdf'])->name('profile.export.pdf');
             Route::get('/profile/export/csv', [App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportModulesCsv'])->name('profile.export.csv');
             Route::get('/modules', [App\Http\Controllers\Trainee\DashboardController::class, 'modules'])->name('modules.index');
-
+            Route::get('/absences', [App\Http\Controllers\Trainee\DashboardController::class, 'absences'])->name('absences.index');
+            Route::get('/absences/export-csv', [\App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportAbsencesCsv'])->name('absences.export.csv');
+            
         });
 
     // <-- This closes the Route::middleware(['auth'])->group(function () { block

@@ -42,12 +42,15 @@ class DashboardController extends Controller
             'user', 'modules', 'absences', 'totalAbsences', 'justified', 'unjustified', 'attendanceRate'
         ));
     }
-    
+
     public function modules()
 {
     $user = Auth::user();
 
-    $modules = $user->modules()->with('trainer')->orderBy('start_date')->get();
+    $modules = $user->modules()
+        ->with('trainer')
+        ->orderBy('start_date', 'asc')
+        ->get();
 
     $totalModules = $modules->count();
     $totalHours = $modules->sum('hours');
@@ -55,5 +58,28 @@ class DashboardController extends Controller
     return view('trainee.modules.index', compact('modules', 'totalModules', 'totalHours'));
 }
 
+public function absences()
+{
+    $user = Auth::user();
+
+    $query = $user->absences()->with('module')->orderBy('date', 'desc');
+
+    // Filtering
+    if (request()->has('justified') && request()->justified !== '') {
+        $query->where('justified', request()->justified);
+    }
+
+    if (request()->filled('from')) {
+        $query->where('date', '>=', request()->from);
+    }
+
+    if (request()->filled('to')) {
+        $query->where('date', '<=', request()->to);
+    }
+
+    $absences = $query->get();
+
+    return view('trainee.absences.index', compact('absences'));
+}
 
 }

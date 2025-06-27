@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainee;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
@@ -29,7 +30,9 @@ class ProfileController extends Controller
             'absences',
             'totalAbsences',
             'justified',
-            'unjustified'
+            'unjustified',
+            
         ));
     }
+
 }

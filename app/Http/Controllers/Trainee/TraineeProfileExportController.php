@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Trainee;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response; // ✅ Import the Response facade
 use Illuminate\Http\Request;
 use PDF;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TraineeProfileExportController extends Controller
 {
@@ -62,6 +62,41 @@ class TraineeProfileExportController extends Controller
             fclose($handle);
         };
 
-        return response()->stream($callback, 200, $headers);
+        return Response::stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export absences as CSV
+     */
+    public function exportAbsencesCsv()
+    {
+        $user = Auth::user();
+
+        $absences = $user->absences()->with('module')->orderBy('date')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="absences.csv"',
+        ];
+
+        $columns = ['Date', 'Module', 'Reason', 'Justified'];
+
+        $callback = function () use ($absences, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($absences as $absence) {
+                fputcsv($file, [
+                    $absence->date ? \Carbon\Carbon::parse($absence->date)->format('d/m/Y') : 'N/A',
+                    optional($absence->module)->name ?? 'N/A',
+                    $absence->reason ?? '-',
+                    $absence->justified ? 'Yes' : 'No',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return Response::stream($callback, 200, $headers);
     }
 }

@@ -56,16 +56,6 @@ class User extends Authenticatable
         return $this->role === 'trainee';
     }
 
-    public function modules()
-    {
-        return $this->belongsToMany(Module::class);
-    }
-
-
-    public function absences()
-    {
-        return $this->hasMany(Absence::class);
-    }
 
     public function trainer()
     {
@@ -86,6 +76,16 @@ class User extends Authenticatable
         return $this->hasMany(\App\Models\Attendance::class);
     }
 
+
+public function modules()
+{
+    return $this->belongsToMany(\App\Models\Module::class);
+}
+
+public function absences()
+{
+    return $this->hasMany(\App\Models\Absence::class);
+}
 
 
 }
