@@ -79,12 +79,13 @@ class DashboardController extends Controller
             ->sortByDesc('absences');
 
         // Recent absences (Attendance model)
-        $recentAbsences = Attendance::with(['trainee', 'module'])
-            ->where('status', 'absent')
-            ->whereIn('module_id', $modules->pluck('id'))
-            ->latest()
-            ->take(5)
-            ->get();
+        $recentAbsences = Absence::with(['trainee', 'module'])
+    ->whereHas('module', function ($query) use ($trainer) {
+        $query->where('trainer_id', $trainer->id);
+    })
+    ->latest('date')
+    ->take(10)
+    ->get();
 
         // Absences by reason
         $absencesByReason = Absence::whereHas('module', function ($query) use ($trainerId) {
@@ -201,7 +202,7 @@ $unjustifiedCount = Absence::whereHas('module', function ($query) use ($trainerI
     'justificationRate' => $justificationRate,
     'justifiedCount' => $justifiedCount,
     'unjustifiedCount' => $unjustifiedCount,
-    
+
 ]);
     }
 }

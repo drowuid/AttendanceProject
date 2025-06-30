@@ -143,7 +143,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/modules', [App\Http\Controllers\Trainee\DashboardController::class, 'modules'])->name('modules.index');
             Route::get('/absences', [App\Http\Controllers\Trainee\DashboardController::class, 'absences'])->name('absences.index');
             Route::get('/absences/export-csv', [\App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportAbsencesCsv'])->name('absences.export.csv');
-            
+            Route::get('/trainees/{id}/profile', [TrainerController::class, 'showTraineeProfile'])->name('trainees.profile');
+
         });
 
     // <-- This closes the Route::middleware(['auth'])->group(function () { block

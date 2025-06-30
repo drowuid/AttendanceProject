@@ -138,12 +138,26 @@
 @endsection
 
 
+
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Global chart instances tracker
+        window.chartInstances = window.chartInstances || {};
+
         // Prevent multiple initializations
         if (typeof window.chartsInitialized === 'undefined') {
             window.chartsInitialized = false;
+        }
+
+        function destroyExistingCharts() {
+            // Destroy all existing chart instances
+            Object.keys(window.chartInstances).forEach(chartId => {
+                if (window.chartInstances[chartId]) {
+                    window.chartInstances[chartId].destroy();
+                    delete window.chartInstances[chartId];
+                }
+            });
         }
 
         function initializeCharts() {
@@ -151,6 +165,9 @@
             if (window.chartsInitialized) {
                 return;
             }
+
+            // Destroy any existing charts first
+            destroyExistingCharts();
 
             const absencesPerModule = {!! json_encode($absencesPerModule ?? []) !!};
             const absencesOverTime = {!! json_encode($absencesOverTime ?? []) !!};
@@ -160,35 +177,48 @@
             const justifiedCount = {{ $justifiedCount ?? 0 }};
             const unjustifiedCount = {{ $unjustifiedCount ?? 0 }};
 
+            // Common options with proper responsive settings
             const commonOptions = {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
+                aspectRatio: 2, // Fixed aspect ratio
                 animation: {
                     duration: 0 // Disable animations to prevent loops
+                },
+                layout: {
+                    padding: 10
                 }
             };
 
-            // Destroy existing charts before creating new ones
-            const chartIds = [
-                'moduleAbsenceChart',
-                'absenceDistributionChart',
-                'absencesOverTimeChart',
-                'absenceReasonChart',
-                'topTraineesChart',
-                'weeklyAbsencesChart',
-                'justifiedChart'
-            ];
-
-            chartIds.forEach(id => {
-                const canvas = document.getElementById(id);
-                if (canvas && Chart.getChart(canvas)) {
-                    Chart.getChart(canvas).destroy();
+            // Specific options for different chart types
+            const doughnutOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1, // Square aspect ratio for doughnut charts
+                animation: {
+                    duration: 0
+                },
+                layout: {
+                    padding: 10
                 }
-            });
+            };
+
+            const verticalBarOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1.5,
+                animation: {
+                    duration: 0
+                },
+                layout: {
+                    padding: 10
+                }
+            };
 
             // Chart 1 – Absences Per Module
-            if (document.getElementById('moduleAbsenceChart')) {
-                new Chart(document.getElementById('moduleAbsenceChart'), {
+            const moduleAbsenceElement = document.getElementById('moduleAbsenceChart');
+            if (moduleAbsenceElement) {
+                window.chartInstances.moduleAbsenceChart = new Chart(moduleAbsenceElement, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(absencesPerModule),
@@ -203,14 +233,22 @@
                     },
                     options: {
                         ...commonOptions,
-                        plugins: { legend: { display: false } }
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             }
 
             // Chart 2 – Absence Distribution (Doughnut)
-            if (document.getElementById('absenceDistributionChart')) {
-                new Chart(document.getElementById('absenceDistributionChart'), {
+            const absenceDistributionElement = document.getElementById('absenceDistributionChart');
+            if (absenceDistributionElement) {
+                window.chartInstances.absenceDistributionChart = new Chart(absenceDistributionElement, {
                     type: 'doughnut',
                     data: {
                         labels: Object.keys(absencesPerModule),
@@ -219,13 +257,14 @@
                             backgroundColor: ['#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA', '#F472B6', '#4ADE80']
                         }]
                     },
-                    options: commonOptions
+                    options: doughnutOptions
                 });
             }
 
             // Chart 3 – Absences Over Time (Line)
-            if (document.getElementById('absencesOverTimeChart')) {
-                new Chart(document.getElementById('absencesOverTimeChart'), {
+            const absencesOverTimeElement = document.getElementById('absencesOverTimeChart');
+            if (absencesOverTimeElement) {
+                window.chartInstances.absencesOverTimeChart = new Chart(absencesOverTimeElement, {
                     type: 'line',
                     data: {
                         labels: Object.keys(absencesOverTime),
@@ -239,13 +278,21 @@
                             pointBackgroundColor: '#3B82F6'
                         }]
                     },
-                    options: commonOptions
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
                 });
             }
 
             // Chart 4 – Absences by Reason (Doughnut)
-            if (document.getElementById('absenceReasonChart')) {
-                new Chart(document.getElementById('absenceReasonChart'), {
+            const absenceReasonElement = document.getElementById('absenceReasonChart');
+            if (absenceReasonElement) {
+                window.chartInstances.absenceReasonChart = new Chart(absenceReasonElement, {
                     type: 'doughnut',
                     data: {
                         labels: Object.keys(absencesByReason),
@@ -255,13 +302,14 @@
                             backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA', '#FB923C']
                         }]
                     },
-                    options: commonOptions
+                    options: doughnutOptions
                 });
             }
 
             // Chart 5 – Top Trainees (Horizontal Bar)
-            if (document.getElementById('topTraineesChart')) {
-                new Chart(document.getElementById('topTraineesChart'), {
+            const topTraineesElement = document.getElementById('topTraineesChart');
+            if (topTraineesElement) {
+                window.chartInstances.topTraineesChart = new Chart(topTraineesElement, {
                     type: 'bar',
                     data: {
                         labels: Object.keys(topTrainees),
@@ -276,14 +324,23 @@
                     options: {
                         ...commonOptions,
                         indexAxis: 'y',
-                        plugins: { legend: { display: false } }
+                        aspectRatio: 1.2, // Adjusted for horizontal bars
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             }
 
             // Chart 6 – Weekly Absences (Line)
-            if (document.getElementById('weeklyAbsencesChart')) {
-                new Chart(document.getElementById('weeklyAbsencesChart'), {
+            const weeklyAbsencesElement = document.getElementById('weeklyAbsencesChart');
+            if (weeklyAbsencesElement) {
+                window.chartInstances.weeklyAbsencesChart = new Chart(weeklyAbsencesElement, {
                     type: 'line',
                     data: {
                         labels: Object.keys(weeklyAbsenceCounts),
@@ -297,13 +354,21 @@
                             pointBackgroundColor: '#3B82F6'
                         }]
                     },
-                    options: commonOptions
+                    options: {
+                        ...commonOptions,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
                 });
             }
 
             // Chart 7 – Justified vs Unjustified (Bar)
-            if (document.getElementById('justifiedChart')) {
-                new Chart(document.getElementById('justifiedChart'), {
+            const justifiedElement = document.getElementById('justifiedChart');
+            if (justifiedElement) {
+                window.chartInstances.justifiedChart = new Chart(justifiedElement, {
                     type: 'bar',
                     data: {
                         labels: ['Justified', 'Unjustified'],
@@ -316,8 +381,10 @@
                         }]
                     },
                     options: {
-                        ...commonOptions,
-                        plugins: { legend: { display: false } },
+                        ...verticalBarOptions,
+                        plugins: {
+                            legend: { display: false }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
@@ -332,6 +399,12 @@
             window.chartsInitialized = true;
         }
 
+        // Clean up function for page unload
+        function cleanupCharts() {
+            destroyExistingCharts();
+            window.chartsInitialized = false;
+        }
+
         // Initialize charts when DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeCharts);
@@ -339,5 +412,20 @@
             // DOM is already ready
             initializeCharts();
         }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', cleanupCharts);
+
+        // Handle visibility change (when user switches tabs)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden, pause any animations
+                Object.values(window.chartInstances).forEach(chart => {
+                    if (chart && chart.options && chart.options.animation) {
+                        chart.options.animation.duration = 0;
+                    }
+                });
+            }
+        });
     </script>
 @endsection

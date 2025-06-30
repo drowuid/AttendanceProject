@@ -93,6 +93,25 @@ public function exportAbsenceStats()
     return Excel::download(new TrainerAbsenceStatsExport($trainerId), 'trainer_absence_stats.xlsx');
 }
 
+public function showTraineeProfile($id)
+{
+    $trainer = auth()->user();
+
+    // Ensure the trainee is enrolled in at least one of the trainer’s modules
+    $trainee = User::where('id', $id)
+        ->whereHas('modules', function ($query) use ($trainer) {
+            $query->where('trainer_id', $trainer->id);
+        })
+        ->with(['modules', 'absences.module'])
+        ->firstOrFail();
+
+    $justified = $trainee->absences->where('justified', true)->count();
+    $unjustified = $trainee->absences->where('justified', false)->count();
+    $total = $trainee->absences->count();
+
+    return view('trainer.trainees.profile', compact('trainee', 'justified', 'unjustified', 'total'));
+}
+
 
 }
 
