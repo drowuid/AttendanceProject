@@ -210,7 +210,13 @@ $recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
     ->take(5)
     ->get();
 
-    
+    $recentUnjustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
+    ->where('justified', 0)
+    ->latest()
+    ->take(5)
+    ->get();
+
+
         return view('trainer.dashboard', [
             // Basic counts
             'modules' => $modules,
@@ -256,6 +262,7 @@ $recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
 
             // Recent justified absences
             'recentJustifiedAbsences'=> $recentJustifiedAbsences->toArray(),
+            'recentUnjustifiedAbsences' => $recentUnjustifiedAbsences->toArray(),
         ]);
     }
 }

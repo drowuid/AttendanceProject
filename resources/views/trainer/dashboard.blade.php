@@ -175,6 +175,34 @@
     </ul>
 </div>
 
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+    <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Recent Unjustified Absences</h2>
+    <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+        @forelse ($recentUnjustifiedAbsences as $absence)
+            @php
+                $absence = (object) $absence;
+                $trainee = isset($absence->trainee) ? (object) $absence->trainee : null;
+                $module = isset($absence->module) ? (object) $absence->module : null;
+            @endphp
+            <li class="flex justify-between items-center">
+                <div>
+                    <a href="{{ route('trainer.trainee.profile', $trainee?->id) }}" class="text-blue-600 hover:underline">
+                        {{ $trainee?->name ?? 'Unknown' }}
+                    </a>
+                    <span class="text-gray-500">— {{ $module?->name ?? 'Unknown Module' }}</span>
+                </div>
+                <span class="text-xs text-gray-500">
+                    {{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                </span>
+            </li>
+        @empty
+            <li class="text-gray-400">No unjustified absences found.</li>
+        @endforelse
+    </ul>
+</div>
+
+
+
 
 
                 <!-- Charts Grid -->
