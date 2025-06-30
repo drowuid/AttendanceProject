@@ -10,6 +10,7 @@ use App\Models\Absence;
 use App\Models\Attendance;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -185,6 +186,31 @@ class DashboardController extends Controller
             return [$item['name'] => $item['total']];
         })->toArray();
 
+
+         // New: Top 5 justified trainees
+    $topJustifiedTrainees = DB::table('absences')
+        ->select('user_id', DB::raw('COUNT(*) as justified_count'))
+        ->where('justified', 1)
+        ->groupBy('user_id')
+        ->orderByDesc('justified_count')
+        ->limit(5)
+        ->get()
+        ->map(function ($item) {
+            $user = User::find($item->user_id);
+            return [
+                'name' => $user?->name ?? 'Unknown',
+                'id' => $user?->id,
+                'count' => $item->justified_count,
+            ];
+        });
+
+$recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
+    ->where('justified', 1)
+    ->latest()
+    ->take(5)
+    ->get();
+
+    
         return view('trainer.dashboard', [
             // Basic counts
             'modules' => $modules,
@@ -224,6 +250,12 @@ class DashboardController extends Controller
             'absenceModuleLabels' => array_keys($absencesPerModule),
             'absenceModuleData' => array_values($absencesPerModule),
             'weeklyAbsenceLabels' => $dates->toArray(),
+
+            //Top justified trainees
+            'topJustifiedTrainees' => $topJustifiedTrainees->toArray(),
+
+            // Recent justified absences
+            'recentJustifiedAbsences'=> $recentJustifiedAbsences->toArray(),
         ]);
     }
 }

@@ -128,6 +128,55 @@
                     </div>
                 </div>
 
+                <!-- Top Justified Trainees -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-6">
+                    <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Top 5 Justified Trainees</h2>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+                        @forelse ($topJustifiedTrainees as $trainee)
+                            <li class="flex justify-between items-center">
+                                <a href="{{ route('trainer.trainee.profile', $trainee['id']) }}"
+                                    class="text-blue-600 hover:underline">
+                                    {{ $trainee['name'] }}
+                                </a>
+                                <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">
+                                    {{ $trainee['count'] }} justified
+                                </span>
+                            </li>
+                        @empty
+                            <li class="text-gray-400">No data available.</li>
+                        @endforelse
+                    </ul>
+                </div>
+
+                <!-- Recent Justified Absences -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-6">
+    <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Recent Justified Absences</h2>
+    <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+        @foreach ($recentJustifiedAbsences as $absence)
+    @php
+        // Convert array to object for safer access
+        $absence = (object) $absence;
+        $trainee = isset($absence->trainee) ? (object) $absence->trainee : null;
+        $module = isset($absence->module) ? (object) $absence->module : null;
+    @endphp
+    <li class="flex justify-between items-center">
+        <div>
+            <a href="{{ route('trainer.trainee.profile', $trainee?->id) }}" class="text-blue-600 hover:underline">
+                {{ $trainee?->name ?? 'Unknown' }}
+            </a>
+            <span class="text-gray-500">— {{ $module?->name ?? 'Unknown Module' }}</span>
+        </div>
+        <span class="text-xs text-gray-500">
+            {{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+        </span>
+    </li>
+@endforeach
+
+    </ul>
+</div>
+
+
+
                 <!-- Charts Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach ([
