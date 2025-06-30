@@ -13,14 +13,17 @@ class Trainee extends Model
         return $this->hasMany(Attendance::class);
     }
 
-    public function absences()
+
+
+public function absences()
 {
-    return $this->hasMany(\App\Models\Absence::class);
+    return $this->hasMany(\App\Models\Absence::class, 'user_id', 'user_id');
 }
 
 public function modules()
 {
-    return $this->belongsToMany(\App\Models\Module::class);
+    return $this->belongsToMany(\App\Models\Module::class, 'module_trainee');
+    // or whatever pivot table you have
 }
 
 

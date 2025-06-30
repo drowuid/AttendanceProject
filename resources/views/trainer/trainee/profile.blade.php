@@ -33,7 +33,7 @@
 
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-3">Absences Details</h3>
-            @if ($trainee->absences->isEmpty())
+            @if ($absences->isEmpty())
                 <p class="text-gray-500">No absences recorded.</p>
             @else
                 <table class="min-w-full text-xs text-left">
@@ -46,7 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($trainee->absences as $absence)
+                        @foreach ($absences as $absence)
                             <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
                                 <td class="py-2">{{ $absence->module->name ?? 'Unknown' }}</td>

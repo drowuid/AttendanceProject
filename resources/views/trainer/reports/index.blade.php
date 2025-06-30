@@ -13,7 +13,8 @@
             </span>
             <div>
                 <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Trainer Reports</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Complete overview of all absences with export options.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Complete overview of all absences with export options.
+                </p>
 
             </div>
             <div class="flex-1"></div>
@@ -29,8 +30,10 @@
         </div>
 
         <!-- Filter Form -->
-        <form id="filterForm" method="GET" class="flex flex-wrap gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-            <select id="moduleFilter" name="module_id" class="border p-2 rounded w-48 dark:bg-gray-900 dark:border-gray-700">
+        <form id="filterForm" method="GET"
+            class="flex flex-wrap gap-4 mb-6 bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+            <select id="moduleFilter" name="module_id"
+                class="border p-2 rounded w-48 dark:bg-gray-900 dark:border-gray-700">
                 <option value="">All Modules</option>
                 @foreach ($modules as $module)
                     <option value="{{ $module->id }}" {{ request('module_id') == $module->id ? 'selected' : '' }}>
@@ -81,7 +84,8 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left border-b dark:border-gray-700 text-xs uppercase text-gray-600 dark:text-gray-300">
+                        <tr
+                            class="text-left border-b dark:border-gray-700 text-xs uppercase text-gray-600 dark:text-gray-300">
                             <th class="py-2">Trainee</th>
                             <th class="py-2">Module</th>
                             <th class="py-2">Date</th>
@@ -93,7 +97,16 @@
                     <tbody>
                         @forelse ($absences as $absence)
                             <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                <td class="py-2">{{ $absence->trainee->name }}</td>
+                                <td class="py-2">
+                                    @if ($absence->trainee)
+                                        <a href="{{ route('trainer.trainee.profile', $absence->trainee->id) }}"
+                                            class="text-blue-600 hover:underline">
+                                            {{ $absence->trainee->name }}
+                                        </a>
+                                    @else
+                                        <span class="text-gray-500">Unknown</span>
+                                    @endif
+                                </td>
                                 <td class="py-2">{{ $absence->module->name }}</td>
                                 <td class="py-2">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
                                 <td class="py-2">{{ $absence->reason }}</td>
@@ -126,54 +139,53 @@
 
 
     @section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('liveSearchInput');
-        const tableRows = document.querySelectorAll('table tbody tr');
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('liveSearchInput');
+                const tableRows = document.querySelectorAll('table tbody tr');
 
-        searchInput.addEventListener('keyup', function () {
-            const searchValue = searchInput.value.toLowerCase();
+                searchInput.addEventListener('keyup', function() {
+                    const searchValue = searchInput.value.toLowerCase();
 
-            tableRows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let match = false;
+                    tableRows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        let match = false;
 
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchValue)) {
-                        match = true;
-                    }
+                        cells.forEach(cell => {
+                            if (cell.textContent.toLowerCase().includes(searchValue)) {
+                                match = true;
+                            }
+                        });
+
+                        row.style.display = match ? '' : 'none';
+                    });
                 });
-
-                row.style.display = match ? '' : 'none';
             });
-        });
-    });
-</script>
-@endsection
+        </script>
+    @endsection
 
 
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('filterForm');
-    const container = document.getElementById('reportTableContainer');
+    @section('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.getElementById('filterForm');
+                const container = document.getElementById('reportTableContainer');
 
-    form.addEventListener('change', function () {
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData).toString();
+                form.addEventListener('change', function() {
+                    const formData = new FormData(form);
+                    const params = new URLSearchParams(formData).toString();
 
-        fetch("{{ route('trainer.reports') }}?" + params, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        })
-        .then(response => response.text())
-        .then(html => {
-            container.innerHTML = html;
-        });
-    });
-});
-</script>
-@endsection
-
+                    fetch("{{ route('trainer.reports') }}?" + params, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            container.innerHTML = html;
+                        });
+                });
+            });
+        </script>
+    @endsection
 @endsection

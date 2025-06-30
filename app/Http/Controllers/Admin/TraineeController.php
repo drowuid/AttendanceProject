@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Illuminate\Routing\Controller;
+use App\Models\Trainee;
 
 class TraineeController extends Controller
 {

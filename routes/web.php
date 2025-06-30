@@ -22,6 +22,7 @@ use App\Http\Controllers\Trainee\DashboardController as TraineeDashboardControll
 
 
 
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login and logout
@@ -128,6 +129,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Trainee management
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
+        Route::get('/trainees/{trainee}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
 
     });
 

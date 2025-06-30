@@ -17,10 +17,28 @@ class TrainerTraineeController extends Controller
 
 
     public function show(Trainee $trainee)
-    {
-        $absences = $trainee->absences()->with('module')->latest()->take(10)->get();
-        $modules = $trainee->modules()->pluck('name')->toArray();
+{
+    // Use user_id to get absences
+    $absences = \App\Models\Absence::where('user_id', $trainee->user_id)
+        ->with('module')
+        ->latest()
+        ->take(10)
+        ->get();
 
-        return view('trainer.trainees.show', compact('trainee', 'absences', 'modules'));
-    }
+    $modules = $trainee->modules()->pluck('name')->toArray();
+
+    $total = $absences->count();
+    $justified = $absences->where('justified', true)->count();
+    $unjustified = $absences->where('justified', false)->count();
+
+    return view('trainer.trainee.profile', compact(
+        'trainee',
+        'absences',
+        'modules',
+        'total',
+        'justified',
+        'unjustified'
+    ));
+}
+
 }
