@@ -17,8 +17,8 @@ class CalendarEvent extends Model
         'end',
     ];
 
-    public function module()
-    {
-        return $this->belongsTo(Module::class);
-    }
+public function module()
+{
+    return $this->belongsTo(\App\Models\Module::class);
+}
 }

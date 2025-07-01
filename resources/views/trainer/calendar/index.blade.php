@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+@endsection
+
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
     <div class="container mx-auto">
@@ -15,100 +19,196 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div id="eventModal" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 w-80">
+        <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Schedule Module</h2>
+        <form id="eventForm">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="start" id="eventStart">
+            <input type="hidden" name="end" id="eventEnd">
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Module:</label>
+            <select name="module_id" id="moduleSelect" class="w-full border p-2 rounded dark:bg-gray-900 dark:border-gray-700 dark:text-white">
+                <option value="">Select a module</option>
+                @foreach($modules as $module)
+                    <option value="{{ $module->id }}">{{ $module->name }}</option>
+                @endforeach
+            </select>
+            <div class="flex justify-end gap-2 mt-4">
+                <button type="button" id="cancelButton" class="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600 transition">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendarEl = document.getElementById('calendar');
+    const modal = document.getElementById('eventModal');
+    const form = document.getElementById('eventForm');
+    const startInput = document.getElementById('eventStart');
+    const endInput = document.getElementById('eventEnd');
+    const cancelButton = document.getElementById('cancelButton');
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek'
+            right: 'dayGridMonth,timeGridWeek,listWeek'
         },
-        editable: true,
         selectable: true,
+        editable: true,
         select: function(info) {
-            const title = prompt('Event Title:');
-            if (title) {
-                const moduleId = prompt('Module ID (numeric):');
-                axios.post("{{ route('trainer.calendar.store') }}", {
-                    title: title,
-                    module_id: moduleId,
-                    start: info.startStr,
-                    end: info.endStr
-                }).then(response => {
-                    if (response.data.success) {
-                        calendar.refetchEvents();
-                    }
-                }).catch(error => {
-                    console.error('Error creating event:', error);
-                    alert('Error creating event. Please try again.');
-                });
-            }
+            startInput.value = info.startStr;
+            endInput.value = info.endStr;
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
         },
-        eventResize: function(info) {
-            axios.put("{{ url('trainer/calendar/events') }}/" + info.event.id, {
-                title: info.event.title,
-                module_id: info.event.extendedProps.module_id,
-                start: info.event.start.toISOString(),
-                end: info.event.end ? info.event.end.toISOString() : null
-            }).then(response => {
-                if (response.data.success) {
-                    calendar.refetchEvents();
-                }
-            }).catch(error => {
-                console.error('Error resizing event:', error);
-                alert('Error updating event. Please try again.');
-                info.revert();
-            });
-        },
-        eventDrop: function(info) {
-            axios.put("{{ url('trainer/calendar/events') }}/" + info.event.id, {
-                title: info.event.title,
-                module_id: info.event.extendedProps.module_id,
-                start: info.event.start.toISOString(),
-                end: info.event.end ? info.event.end.toISOString() : null
-            }).then(response => {
-                if (response.data.success) {
-                    calendar.refetchEvents();
-                }
-            }).catch(error => {
-                console.error('Error moving event:', error);
-                alert('Error updating event. Please try again.');
-                info.revert();
-            });
+        events: function(fetchInfo, successCallback, failureCallback) {
+            fetch("{{ route('trainer.calendar.index') }}")
+                .then(response => response.json())
+                .then(data => successCallback(data))
+                .catch(error => failureCallback(error));
         },
         eventClick: function(info) {
             if (confirm('Delete this event?')) {
-                axios.delete("{{ url('trainer/calendar/events') }}/" + info.event.id)
-                    .then(response => {
-                        if (response.data.success) {
-                            calendar.refetchEvents();
-                        }
-                    }).catch(error => {
-                        console.error('Error deleting event:', error);
-                        alert('Error deleting event. Please try again.');
-                    });
+                fetch("{{ url('/trainer/calendar/events') }}/" + info.event.id, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        calendar.refetchEvents();
+                    } else {
+                        throw new Error('Failed to delete event');
+                    }
+                }).catch(error => {
+                    console.error('Error deleting event:', error);
+                    alert('Error deleting event. Please try again.');
+                });
             }
         },
-        events: [
-            @foreach($modules as $module)
-            {
-                id: "{{ $module->id }}",
-                title: "{{ $module->name }}",
-                start: "{{ $module->start_date }}",
-                end: "{{ $module->end_date }}",
-                extendedProps: {
-                    module_id: "{{ $module->id }}"
+        eventDrop: function(info) {
+            fetch("{{ url('/trainer/calendar/events') }}/" + info.event.id, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    start: info.event.start.toISOString(),
+                    end: info.event.end ? info.event.end.toISOString() : null
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update event');
                 }
-            },
-            @endforeach
-        ]
+                return response.json();
+            }).then(data => {
+                if (data.success) {
+                    calendar.refetchEvents();
+                } else {
+                    throw new Error('Update failed');
+                }
+            }).catch(error => {
+                console.error('Error updating event:', error);
+                alert('Error updating event. Please try again.');
+                info.revert();
+            });
+        },
+        eventResize: function(info) {
+            fetch("{{ url('/trainer/calendar/events') }}/" + info.event.id, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    start: info.event.start.toISOString(),
+                    end: info.event.end ? info.event.end.toISOString() : null
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update event');
+                }
+                return response.json();
+            }).then(data => {
+                if (data.success) {
+                    calendar.refetchEvents();
+                } else {
+                    throw new Error('Update failed');
+                }
+            }).catch(error => {
+                console.error('Error updating event:', error);
+                alert('Error updating event. Please try again.');
+                info.revert();
+            });
+        }
     });
+
     calendar.render();
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        // Basic validation
+        if (!formData.get('module_id')) {
+            alert('Please select a module');
+            return;
+        }
+
+        fetch("/trainer/calendar/events", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error('Server response:', text);
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                });
+            }
+            return response.json();
+        }).then(data => {
+            if (data.success) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                calendar.refetchEvents();
+                form.reset();
+            } else {
+                throw new Error('Server returned success: false');
+            }
+        }).catch(error => {
+            console.error('Error creating event:', error);
+            alert('Error creating event: ' + error.message);
+        });
+    });
+
+    cancelButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        form.reset();
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            form.reset();
+        }
+    });
 });
 </script>
 @endsection
