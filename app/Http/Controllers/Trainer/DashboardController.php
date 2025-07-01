@@ -53,8 +53,8 @@ class DashboardController extends Controller
 
         // Absences over time (monthly) - Fixed to return proper format
         $absencesOverTimeCollection = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->selectRaw("DATE_FORMAT(date, '%Y-%m') as month, COUNT(*) as total")
             ->groupBy('month')
             ->orderBy('month')
@@ -95,8 +95,8 @@ class DashboardController extends Controller
 
         // Absences by reason - Fixed to return array
         $absencesByReasonCollection = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->whereNotNull('reason')
             ->selectRaw('reason, COUNT(*) as total')
             ->groupBy('reason')
@@ -115,8 +115,8 @@ class DashboardController extends Controller
 
         // Weekly absences data
         $weeklyAbsencesData = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->whereBetween('date', [Carbon::today()->subDays(6), Carbon::today()])
             ->selectRaw('DATE(date) as absence_date, COUNT(*) as total')
             ->groupByRaw('DATE(date)')
@@ -129,23 +129,23 @@ class DashboardController extends Controller
 
         // Weekly statistics
         $weeklyAbsencesCount = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->whereBetween('date', [$startOfWeek, $endOfWeek])
             ->whereNull('deleted_at')
             ->count();
 
         $justifiedCount = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->whereBetween('date', [$startOfWeek, $endOfWeek])
             ->where('justified', true)
             ->whereNull('deleted_at')
             ->count();
 
         $unjustifiedCount = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->whereBetween('date', [$startOfWeek, $endOfWeek])
             ->where('justified', false)
             ->whereNull('deleted_at')
@@ -166,8 +166,8 @@ class DashboardController extends Controller
 
         // Top trainees by absences - Fixed query
         $topTraineesCollection = Absence::whereHas('module', function ($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
-            })
+            $query->where('trainer_id', $trainerId);
+        })
             ->with('trainee')
             ->get()
             ->groupBy('trainee_id')
@@ -187,34 +187,40 @@ class DashboardController extends Controller
         })->toArray();
 
 
-         // New: Top 5 justified trainees
-    $topJustifiedTrainees = DB::table('absences')
-        ->select('user_id', DB::raw('COUNT(*) as justified_count'))
-        ->where('justified', 1)
-        ->groupBy('user_id')
-        ->orderByDesc('justified_count')
-        ->limit(5)
-        ->get()
-        ->map(function ($item) {
-            $user = User::find($item->user_id);
-            return [
-                'name' => $user?->name ?? 'Unknown',
-                'id' => $user?->id,
-                'count' => $item->justified_count,
-            ];
-        });
+        // New: Top 5 justified trainees
+        $topJustifiedTrainees = DB::table('absences')
+            ->select('user_id', DB::raw('COUNT(*) as justified_count'))
+            ->where('justified', 1)
+            ->groupBy('user_id')
+            ->orderByDesc('justified_count')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                $user = User::find($item->user_id);
+                return [
+                    'name' => $user?->name ?? 'Unknown',
+                    'id' => $user?->id,
+                    'count' => $item->justified_count,
+                ];
+            });
 
-$recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
-    ->where('justified', 1)
-    ->latest()
-    ->take(5)
-    ->get();
+        $recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
+            ->where('justified', 1)
+            ->latest()
+            ->take(5)
+            ->get();
 
-    $recentUnjustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
-    ->where('justified', 0)
-    ->latest()
-    ->take(5)
-    ->get();
+        $recentUnjustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
+            ->where('justified', 0)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $topAbsentTrainees = \App\Models\User::whereHas('absences')
+            ->withCount(['absences'])
+            ->orderBy('absences_count', 'desc')
+            ->take(5)
+            ->get();
 
 
         return view('trainer.dashboard', [
@@ -261,8 +267,10 @@ $recentJustifiedAbsences = \App\Models\Absence::with(['trainee', 'module'])
             'topJustifiedTrainees' => $topJustifiedTrainees->toArray(),
 
             // Recent justified absences
-            'recentJustifiedAbsences'=> $recentJustifiedAbsences->toArray(),
+            'recentJustifiedAbsences' => $recentJustifiedAbsences->toArray(),
             'recentUnjustifiedAbsences' => $recentUnjustifiedAbsences->toArray(),
+
+            'topAbsentTrainees' => $topAbsentTrainees->toArray(),
         ]);
     }
 }

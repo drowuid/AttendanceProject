@@ -5,60 +5,13 @@
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
         <div class="container mx-auto flex flex-col lg:flex-row gap-6">
 
-            <!-- Sidebar -->
-            <aside
-                class="w-full lg:w-64 bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col gap-5 text-xs sticky top-8 h-fit self-start">
-                <div>
-                    <div class="mb-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Quick Actions
-                    </div>
-                    <a href="{{ route('admin.absences.index') }}"
-                        class="block px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs font-medium text-center transition-all duration-150">
-                        Manage Absences
-                    </a>
-                    <a href="{{ route('admin.users.index') }}"
-                        class="block px-3 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 text-xs font-medium text-center transition-all duration-150 mt-2">
-                        Manage Users & Roles
-                    </a>
-                    <a href="{{ route('admin.admin.trainees.index') }}"
-                        class="block px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-xs font-medium text-center transition-all duration-150 mt-2">
-                        Manage Trainees
-                    </a>
-                </div>
-                <div>
-                    <div class="mb-2 font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                        Export Options
-                    </div>
-                    <a href="{{ route('admin.modules.export') }}"
-                        class="block px-3 py-2 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded text-center transition-all duration-150 mb-2">
-                        Modules
-                    </a>
-                    <a href="{{ route('admin.admin.export.topTrainees') }}"
-                        class="block px-3 py-2 text-xs font-medium text-white bg-purple-500 hover:bg-purple-600 rounded text-center transition-all duration-150 mb-2">
-                        Top Trainees
-                    </a>
-                    <a href="{{ route('admin.admin.export.absencesByReason') }}"
-                        class="block px-3 py-2 text-xs font-medium text-white bg-pink-500 hover:bg-pink-600 rounded text-center transition-all duration-150">
-                        Absences by Reason
-                    </a>
-                    <a href="{{ route('admin.admin.export.justifiedVsUnjustified') }}"
-                        class="block px-3 py-2 text-xs font-medium text-white bg-yellow-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-2">
-                        Justified/Unjustified
-                    </a>
-                    <a href="{{ route('admin.admin.export.weeklyAbsences') }}"
-                        class="block px-3 py-2 text-xs font-medium text-white bg-red-500 hover:bg-yellow-600 rounded text-center transition-all duration-150 mt-2">
-                        Weekly Absences
-                    </a>
-                </div>
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 flex flex-col gap-5">
                 <!-- Header -->
                 <div class="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-red-100 dark:bg-red-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-300"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 dark:text-red-300" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h18v18H3V3zm3 6h12v2H6V9zm0 4h12v2H6v-2z" />
                         </svg>
@@ -69,6 +22,22 @@
                             Overview of platform activity and stats.
                         </p>
                     </div>
+                </div>
+                <!-- Quick Actions & Export Options -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+                    <!-- Quick Actions -->
+                    <a href="{{ route('admin.absences.index') }}"
+                        class="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition-all text-xs font-medium text-center">
+                        📋 Manage Absences
+                    </a>
+                    <a href="{{ route('admin.users.index') }}"
+                        class="flex items-center justify-center px-4 py-2 bg-indigo-500 text-white rounded shadow hover:bg-indigo-600 transition-all text-xs font-medium text-center">
+                        👥 Manage Users & Roles
+                    </a>
+                    <a href="{{ route('admin.admin.trainees.index') }}"
+                        class="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition-all text-xs font-medium text-center">
+                        🎓 Manage Trainees
+                    </a>
                 </div>
 
                 <!-- Summary Cards -->
@@ -91,13 +60,41 @@
                     </div>
                 </div>
 
+                <!-- Quick Actions & Export Options -->
+                <div class="flex justify-center">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-4 w-full max-w-5xl">
+                        <!-- Export Options -->
+                        <a href="{{ route('admin.modules.export') }}"
+                            class="flex items-center justify-center px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition-all text-xs font-medium text-center">
+                            📚 Export Modules
+                        </a>
+                        <a href="{{ route('admin.admin.export.topTrainees') }}"
+                            class="flex items-center justify-center px-4 py-2 bg-purple-500 text-white rounded shadow hover:bg-purple-600 transition-all text-xs font-medium text-center">
+                            🏆 Export Top Trainees
+                        </a>
+                        <a href="{{ route('admin.admin.export.absencesByReason') }}"
+                            class="flex items-center justify-center px-4 py-2 bg-pink-500 text-white rounded shadow hover:bg-pink-600 transition-all text-xs font-medium text-center">
+                            📊 Absences by Reason
+                        </a>
+                        <a href="{{ route('admin.admin.export.justifiedVsUnjustified') }}"
+                            class="flex items-center justify-center px-4 py-2 bg-yellow-500 text-white rounded shadow hover:bg-yellow-600 transition-all text-xs font-medium text-center">
+                            ⚖️ Justified/Unjustified
+                        </a>
+                        <a href="{{ route('admin.admin.export.weeklyAbsences') }}"
+                            class="flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 transition-all text-xs font-medium text-center">
+                            📅 Weekly Absences
+                        </a>
+                    </div>
+                </div>
+
                 <!-- User Management Overview -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <h2 class="text-base font-semibold mb-2 text-gray-900 dark:text-white">Recent Users</h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-xs text-left">
                             <thead>
-                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <tr
+                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
                                     <th class="py-1">Name</th>
                                     <th class="py-1">Email</th>
                                     <th class="py-1">Role</th>
@@ -109,11 +106,13 @@
                                     <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td>
                                             @if ($user->role === 'trainee')
-                                                <a href="{{ route('admin.trainees.profile', $user->id) }}" class="text-blue-600 hover:underline font-medium">
+                                                <a href="{{ route('admin.trainees.profile', $user->id) }}"
+                                                    class="text-blue-600 hover:underline font-medium">
                                                     {{ $user->name }}
                                                 </a>
                                             @elseif ($user->role === 'trainer')
-                                                <a href="{{ route('admin.trainers.profile', $user->id) }}" class="text-blue-600 hover:underline font-medium">
+                                                <a href="{{ route('admin.trainers.profile', $user->id) }}"
+                                                    class="text-blue-600 hover:underline font-medium">
                                                     {{ $user->name }}
                                                 </a>
                                             @else
@@ -142,7 +141,8 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-xs text-left">
                             <thead>
-                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <tr
+                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
                                     <th class="py-1">Trainee</th>
                                     <th class="py-1">Module</th>
                                     <th class="py-1">Date</th>
@@ -155,7 +155,7 @@
                                         <td class="py-1">
                                             @if ($absence->trainee)
                                                 <a href="{{ route('admin.trainees.profile', ['user' => $absence->trainee->id]) }}"
-                                                   class="text-blue-600 hover:underline">
+                                                    class="text-blue-600 hover:underline">
                                                     {{ $absence->trainee->name }}
                                                 </a>
                                             @else
@@ -163,7 +163,8 @@
                                             @endif
                                         </td>
                                         <td class="py-1">{{ $absence->module->name ?? 'Unknown' }}</td>
-                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
+                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                                        </td>
                                         <td class="py-1">
                                             @if ($absence->justified)
                                                 <span class="text-green-600 font-medium">Yes</span>
@@ -174,7 +175,44 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="py-2 text-center text-gray-500 dark:text-gray-400">No absences recorded.</td>
+                                        <td colspan="4" class="py-2 text-center text-gray-500 dark:text-gray-400">No
+                                            absences recorded.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Module Attendance Overview Table -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-4">
+                    <h2 class="text-base font-semibold mb-2 text-gray-900 dark:text-white">Module Attendance Overview</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-xs text-left">
+                            <thead>
+                                <tr
+                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                    <th class="py-1 px-2">Module</th>
+                                    <th class="py-1 px-2">Trainees</th>
+                                    <th class="py-1 px-2">Total Absences</th>
+                                    <th class="py-1 px-2">Justified</th>
+                                    <th class="py-1 px-2">Unjustified</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($modulesOverview as $module)
+                                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td class="py-1 px-2">{{ $module->name }}</td>
+                                        <td class="py-1 px-2">{{ $module->trainees_count }}</td>
+                                        <td class="py-1 px-2">{{ $module->total_absences }}</td>
+                                        <td class="py-1 px-2 text-green-600">{{ $module->justified_absences }}</td>
+                                        <td class="py-1 px-2 text-red-600">{{ $module->unjustified_absences }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-2 text-gray-500 dark:text-gray-400">
+                                            No module data available.
+                                        </td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -232,46 +270,13 @@
                     <!-- Attendance Trends -->
                     <div class="col-span-full flex justify-center">
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-3 flex flex-col items-center">
-                            <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Weekly Attendance Trends</h2>
+                            <h2 class="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Weekly Attendance Trends
+                            </h2>
                             <canvas id="attendanceTrendsChart" width="220" height="120"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Module Attendance Overview Table -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-4">
-                    <h2 class="text-base font-semibold mb-2 text-gray-900 dark:text-white">Module Attendance Overview</h2>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-xs text-left">
-                            <thead>
-                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
-                                    <th class="py-1 px-2">Module</th>
-                                    <th class="py-1 px-2">Trainees</th>
-                                    <th class="py-1 px-2">Total Absences</th>
-                                    <th class="py-1 px-2">Justified</th>
-                                    <th class="py-1 px-2">Unjustified</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($modulesOverview as $module)
-                                    <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="py-1 px-2">{{ $module->name }}</td>
-                                        <td class="py-1 px-2">{{ $module->trainees_count }}</td>
-                                        <td class="py-1 px-2">{{ $module->total_absences }}</td>
-                                        <td class="py-1 px-2 text-green-600">{{ $module->justified_absences }}</td>
-                                        <td class="py-1 px-2 text-red-600">{{ $module->unjustified_absences }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center py-2 text-gray-500 dark:text-gray-400">
-                                            No module data available.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
@@ -316,24 +321,87 @@
             }
 
             // Apply container sizing to all charts
-            const chartConfigs = [
-                { id: 'absenceChart', width: 350, height: 180 },
-                { id: 'absenceModuleChart', width: 350, height: 180 },
-                { id: 'monthlyAbsenceChart', width: 350, height: 180 },
-                { id: 'monthlyAbsenceLineChart', width: 350, height: 180 },
-                { id: 'moduleAbsenceBarChart', width: 350, height: 180 },
-                { id: 'justifiedChart', width: 350, height: 180 },
-                { id: 'weeklyAbsencesChart', width: 350, height: 180 },
-                { id: 'absenceReasonChart', width: 350, height: 180 },
-                { id: 'topTraineesChart', width: 350, height: 180 },
-                { id: 'attendanceTrendsChart', width: 350, height: 180 },
+            const chartConfigs = [{
+                    id: 'absenceChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'absenceModuleChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'monthlyAbsenceChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'monthlyAbsenceLineChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'moduleAbsenceBarChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'justifiedChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'weeklyAbsencesChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'absenceReasonChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'topTraineesChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'attendanceTrendsChart',
+                    width: 350,
+                    height: 180
+                },
                 // Trainer charts
-                { id: 'trainerAbsenceChart', width: 350, height: 180 },
-                { id: 'trainerModuleChart', width: 350, height: 180 },
-                { id: 'trainerMonthlyChart', width: 350, height: 180 },
-                { id: 'trainerWeeklyChart', width: 350, height: 180 },
-                { id: 'trainerReasonChart', width: 350, height: 180 },
-                { id: 'trainerTrendsChart', width: 350, height: 180 }
+                {
+                    id: 'trainerAbsenceChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'trainerModuleChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'trainerMonthlyChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'trainerWeeklyChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'trainerReasonChart',
+                    width: 350,
+                    height: 180
+                },
+                {
+                    id: 'trainerTrendsChart',
+                    width: 350,
+                    height: 180
+                }
             ];
 
             chartConfigs.forEach(config => {
@@ -561,7 +629,8 @@
                             x: {
                                 ticks: {
                                     callback: function(value, index, values) {
-                                        return this.getLabelForValue(value).split('-').slice(1).join('/');
+                                        return this.getLabelForValue(value).split('-').slice(1).join(
+                                            '/');
                                     }
                                 }
                             },
@@ -818,7 +887,8 @@
                             x: {
                                 ticks: {
                                     callback: function(value, index, values) {
-                                        return this.getLabelForValue(value).split('-').slice(1).join('/');
+                                        return this.getLabelForValue(value).split('-').slice(1).join(
+                                            '/');
                                     }
                                 }
                             },
@@ -916,4 +986,3 @@
         });
     </script>
 @endsection
-
