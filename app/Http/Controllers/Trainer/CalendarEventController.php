@@ -17,8 +17,11 @@ class CalendarEventController extends Controller
                 'title' => $event->module->name,
                 'start' => $event->start,
                 'end' => $event->end,
+                'backgroundColor' => '#3788d8',
+                'borderColor' => '#3788d8',
                 'extendedProps' => [
-                    'module_id' => $event->module_id
+                    'module_id' => $event->module_id,
+                    'description' => $event->description ?? ''
                 ]
             ];
         });
@@ -38,11 +41,16 @@ class CalendarEventController extends Controller
             // Get the module to use its name as title
             $module = Module::findOrFail($validated['module_id']);
 
+            // Format dates properly
+            $startDate = \Carbon\Carbon::parse($validated['start']);
+            $endDate = $validated['end'] ? \Carbon\Carbon::parse($validated['end']) : $startDate->copy()->endOfDay();
+
             $event = CalendarEvent::create([
                 'module_id' => $validated['module_id'],
-                'title' => $module->name, // Set the title
-                'start' => $validated['start'],
-                'end' => $validated['end'] ?? $validated['start'],
+                'title' => $module->name,
+                'description' => 'Module: ' . $module->name,
+                'start' => $startDate->format('Y-m-d H:i:s'),
+                'end' => $endDate->format('Y-m-d H:i:s'),
             ]);
 
             // Load the module relationship for the response
@@ -55,6 +63,8 @@ class CalendarEventController extends Controller
                     'title' => $event->module->name,
                     'start' => $event->start,
                     'end' => $event->end,
+                    'backgroundColor' => '#3788d8',
+                    'borderColor' => '#3788d8',
                 ]
             ]);
 

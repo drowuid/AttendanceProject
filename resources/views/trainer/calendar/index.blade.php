@@ -185,8 +185,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 modal.classList.add('hidden');
                 modal.style.display = 'none';
-                calendar.refetchEvents();
                 form.reset();
+
+                // Add the new event directly to the calendar
+                calendar.addEvent({
+                    id: data.event.id,
+                    title: data.event.title,
+                    start: data.event.start,
+                    end: data.event.end
+                });
             } else {
                 throw new Error('Server returned success: false');
             }

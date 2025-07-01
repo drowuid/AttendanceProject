@@ -17,8 +17,13 @@ class CalendarEvent extends Model
         'end',
     ];
 
-public function module()
-{
-    return $this->belongsTo(\App\Models\Module::class);
-}
+    protected $casts = [
+        'start' => 'datetime',
+        'end' => 'datetime',
+    ];
+
+    public function module()
+    {
+        return $this->belongsTo(\App\Models\Module::class);
+    }
 }

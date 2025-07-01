@@ -19,8 +19,11 @@ class TrainerCalendarController extends Controller
                     'title' => $event->module->name,
                     'start' => $event->start,
                     'end' => $event->end,
+                    'backgroundColor' => '#3788d8',
+                    'borderColor' => '#3788d8',
                     'extendedProps' => [
-                        'module_id' => $event->module_id
+                        'module_id' => $event->module_id,
+                        'description' => $event->description ?? ''
                     ]
                 ];
             });
