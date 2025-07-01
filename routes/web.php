@@ -99,41 +99,56 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Trainer-only routes
-    Route::middleware(['role:trainer'])->prefix('trainer')->name('trainer.')->group(function () {
+    Route::middleware(['role:trainer'])
+        ->prefix('trainer')
+        ->name('trainer.')
+        ->group(function () {
 
-        // Dashboard
-        Route::get('/dashboard', [TrainerDashboardController::class, 'index'])->name('dashboard');
+            // Dashboard
+            Route::get('/dashboard', [TrainerDashboardController::class, 'index'])->name('dashboard');
 
-        // Absence management
-        Route::get('/absences/{absence}/edit', [TrainerAbsenceController::class, 'edit'])->name('absences.edit');
-        Route::put('/absences/{absence}', [TrainerAbsenceController::class, 'update'])->name('absences.update');
-        Route::delete('/absences/{absence}', [TrainerAbsenceController::class, 'destroy'])->name('absences.destroy');
-        Route::get('/absences/trash', [TrainerAbsenceController::class, 'trash'])->name('absences.trash');
-        Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
-        Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
-        Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');
-        Route::get('/absences/calendar', [TrainerAbsenceController::class, 'calendar'])->name('absences.calendar');
-        Route::get('/absences/stats', [TrainerAbsenceController::class, 'stats'])->name('absences.stats');
+            // Absence management
+            Route::get('/absences/{absence}/edit', [TrainerAbsenceController::class, 'edit'])->name('absences.edit');
+            Route::put('/absences/{absence}', [TrainerAbsenceController::class, 'update'])->name('absences.update');
+            Route::delete('/absences/{absence}', [TrainerAbsenceController::class, 'destroy'])->name('absences.destroy');
+            Route::get('/absences/trash', [TrainerAbsenceController::class, 'trash'])->name('absences.trash');
+            Route::put('/absences/{id}/restore', [TrainerAbsenceController::class, 'restore'])->name('absences.restore');
+            Route::delete('/absences/{id}/force', [TrainerAbsenceController::class, 'forceDelete'])->name('absences.forceDelete');
+            Route::get('/absences/export', [TrainerAbsenceController::class, 'export'])->name('absences.export');
+            Route::get('/absences/calendar', [TrainerAbsenceController::class, 'calendar'])->name('absences.calendar');
+            Route::get('/absences/stats', [TrainerAbsenceController::class, 'stats'])->name('absences.stats');
 
-        // Reports & exports
-        Route::get('/reports', [TrainerReportController::class, 'index'])->name('reports');
-        Route::get('/reports/pdf', [TrainerReportController::class, 'exportPdf'])->name('reports.export.pdf');
-        Route::get('/absence/email-summary', [\App\Http\Controllers\Trainer\TrainerReportController::class, 'exportAbsenceEmailSummary'])->name('absence.email.summary');
-        Route::get('/reports/export/csv', [TrainerReportController::class, 'exportCsv'])->name('reports.export.csv');
+            // Reports & exports
+            Route::get('/reports', [TrainerReportController::class, 'index'])->name('reports');
+            Route::get('/reports/pdf', [TrainerReportController::class, 'exportPdf'])->name('reports.export.pdf');
+            Route::get('/absence/email-summary', [TrainerReportController::class, 'exportAbsenceEmailSummary'])->name('absence.email.summary');
+            Route::get('/reports/export/csv', [TrainerReportController::class, 'exportCsv'])->name('reports.export.csv');
+
+            // Stats
+            Route::get('/statistics', [TrainerStatisticsController::class, 'index'])->name('statistics');
+
+            // Export absence stats
+            Route::get('/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('export.absences');
+            Route::get('/export/absence-stats/pdf', [TrainerController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
+
+            // Trainee management
+            Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
+            Route::get('/trainees/{trainee}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
+
+            // Calendar
+            Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
+
+            // Calendar events management
+            Route::prefix('calendar')
+                ->name('calendar.')
+                ->group(function () {
+                    Route::post('/events', [\App\Http\Controllers\Trainer\CalendarEventController::class, 'store'])->name('store');
+                    Route::put('/events/{event}', [\App\Http\Controllers\Trainer\CalendarEventController::class, 'update'])->name('update');
+                    Route::delete('/events/{event}', [\App\Http\Controllers\Trainer\CalendarEventController::class, 'destroy'])->name('destroy');
+                });
+        });
 
 
-        // Stats
-        Route::get('/statistics', [TrainerStatisticsController::class, 'index'])->name('statistics');
-
-        // Export absence stats
-        Route::get('/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('export.absences');
-        Route::get('/export/absence-stats/pdf', [TrainerController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
-
-        // Trainee management
-        Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
-        Route::get('/trainees/{trainee}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
-
-        Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
 
     });
 
@@ -151,10 +166,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/absences/export-csv', [\App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportAbsencesCsv'])->name('absences.export.csv');
             Route::get('/trainees/{id}/profile', [TrainerController::class, 'showTraineeProfile'])->name('trainees.profile');
 
-        });
+    });
 
-    // <-- This closes the Route::middleware(['auth'])->group(function () { block
-});
+// <-- This closes the Route::middleware(['auth'])->group(function () { block
 
 require __DIR__ . '/auth.php';
 
