@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\AdminExportController;
 use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Trainee\DashboardController as TraineeDashboardController;
+use App\Http\Controllers\Trainer\TrainerCalendarController;
+
 
 
 
@@ -130,6 +132,8 @@ Route::middleware(['auth'])->group(function () {
         // Trainee management
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
         Route::get('/trainees/{trainee}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
+
+        Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
 
     });
 

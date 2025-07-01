@@ -26,7 +26,7 @@
                 </div>
                 <!-- Quick Actions & Export Options -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
-                    <a href="{{ route('calendar.index') }}"
+                    <a href="{{ route('trainer.calendar.index') }}"
                         class="flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition-all text-xs font-medium text-center">
                         📅 View Course Calendar
                     </a>
