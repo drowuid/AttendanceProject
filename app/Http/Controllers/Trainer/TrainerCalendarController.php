@@ -68,7 +68,11 @@ public function store(Request $request)
         'module_id' => 'required|exists:modules,id',
     ]);
 
+    // Get the module to use its name as title
+    $module = Module::findOrFail($request->module_id);
+
     $event = CalendarEvent::create([
+        'title' => $module->name,
         'start' => $request->start,
         'end' => $request->end,
         'module_id' => $request->module_id,
@@ -78,7 +82,7 @@ public function store(Request $request)
         'success' => true,
         'event' => [
             'id' => $event->id,
-            'title' => $event->module->name,
+            'title' => $event->title,
             'start' => $event->start,
             'end' => $event->end,
             'module_id' => $event->module_id,
