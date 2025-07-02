@@ -128,16 +128,13 @@
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Top Absent Trainees</h2>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($topAbsentTrainees as $trainee)
-                            @php
-                                $trainee = (object) $trainee;
-                            @endphp
                             <li class="flex justify-between items-center">
-                                <a href="{{ route('trainer.trainee.profile', $trainee->id ?? '') }}"
+                                <a href="{{ route('trainer.trainee.profile', $trainee['id'] ?? '') }}"
                                     class="text-blue-600 hover:underline">
-                                    {{ $trainee->name ?? 'Unknown' }}
+                                    {{ $trainee['name'] ?? 'Unknown' }}
                                 </a>
                                 <span class="text-xs text-gray-500">
-                                    {{ $trainee->absences_count ?? 0 }} absences
+                                    {{ $trainee['absences_count'] ?? 0 }} absences
                                 </span>
                             </li>
                         @empty
@@ -145,8 +142,6 @@
                         @endforelse
                     </ul>
                 </div>
-
-
 
                 <!-- Top Justified Trainees -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-6">
@@ -172,27 +167,22 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mt-6">
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Recent Justified Absences</h2>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
-                        @foreach ($recentJustifiedAbsences as $absence)
-                            @php
-                                // Convert array to object for safer access
-                                $absence = (object) $absence;
-                                $trainee = isset($absence->trainee) ? (object) $absence->trainee : null;
-                                $module = isset($absence->module) ? (object) $absence->module : null;
-                            @endphp
+                        @forelse ($recentJustifiedAbsences as $absence)
                             <li class="flex justify-between items-center">
                                 <div>
-                                    <a href="{{ route('trainer.trainee.profile', $trainee?->id) }}"
+                                    <a href="{{ route('trainer.trainee.profile', $absence['trainee']['id']) }}"
                                         class="text-blue-600 hover:underline">
-                                        {{ $trainee?->name ?? 'Unknown' }}
+                                        {{ $absence['trainee']['name'] ?? 'Unknown' }}
                                     </a>
-                                    <span class="text-gray-500">— {{ $module?->name ?? 'Unknown Module' }}</span>
+                                    <span class="text-gray-500">— {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
                                 </div>
                                 <span class="text-xs text-gray-500">
-                                    {{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($absence['date'])->format('d/m/Y') }}
                                 </span>
                             </li>
-                        @endforeach
-
+                        @empty
+                            <li class="text-gray-400">No justified absences found.</li>
+                        @endforelse
                     </ul>
                 </div>
 
@@ -200,21 +190,16 @@
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Recent Unjustified Absences</h2>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($recentUnjustifiedAbsences as $absence)
-                            @php
-                                $absence = (object) $absence;
-                                $trainee = isset($absence->trainee) ? (object) $absence->trainee : null;
-                                $module = isset($absence->module) ? (object) $absence->module : null;
-                            @endphp
                             <li class="flex justify-between items-center">
                                 <div>
-                                    <a href="{{ route('trainer.trainee.profile', $trainee?->id) }}"
+                                    <a href="{{ route('trainer.trainee.profile', $absence['trainee']['id']) }}"
                                         class="text-blue-600 hover:underline">
-                                        {{ $trainee?->name ?? 'Unknown' }}
+                                        {{ $absence['trainee']['name'] ?? 'Unknown' }}
                                     </a>
-                                    <span class="text-gray-500">— {{ $module?->name ?? 'Unknown Module' }}</span>
+                                    <span class="text-gray-500">— {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
                                 </div>
                                 <span class="text-xs text-gray-500">
-                                    {{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($absence['date'])->format('d/m/Y') }}
                                 </span>
                             </li>
                         @empty
@@ -222,10 +207,6 @@
                         @endforelse
                     </ul>
                 </div>
-
-
-
-
 
                 <!-- Charts Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -249,21 +230,28 @@
     </div>
 @endsection
 
-
-
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const absencesPerModule = {!! json_encode($absencesPerModule ?? []) !!};
-            const absencesOverTime = {!! json_encode($absencesOverTime ?? []) !!};
-            const absencesByReason = {!! json_encode($absencesByReason ?? []) !!};
-            const topTrainees = {!! json_encode($topTrainees ?? []) !!};
-            const weeklyAbsenceCounts = {!! json_encode($weeklyAbsenceCounts ?? []) !!};
+            // Get data from backend with fallbacks
+            const absencesPerModule = @json($absencesPerModule ?? []);
+            const absencesOverTime = @json($absencesOverTime ?? []);
+            const absencesByReason = @json($absencesByReason ?? []);
+            const topTrainees = @json($topTrainees ?? []);
+            const weeklyAbsenceCounts = @json($weeklyAbsenceCounts ?? []);
             const justifiedCount = {{ $justifiedCount ?? 0 }};
             const unjustifiedCount = {{ $unjustifiedCount ?? 0 }};
 
-            const createChart = (ctx, config) => new Chart(ctx, config);
+            const createChart = (ctx, config) => {
+                if (!ctx) return null;
+                try {
+                    return new Chart(ctx, config);
+                } catch (error) {
+                    console.error('Error creating chart:', error);
+                    return null;
+                }
+            };
 
             const commonOptions = {
                 responsive: true,
@@ -274,12 +262,23 @@
                 },
                 layout: {
                     padding: 10
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 }
             };
 
             const doughnutOptions = {
                 ...commonOptions,
-                aspectRatio: 1
+                aspectRatio: 1,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
             };
 
             const barOptions = {
@@ -287,129 +286,188 @@
                 aspectRatio: 1.5,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
                     }
                 }
             };
 
-            if (Object.keys(absencesPerModule).length) {
-                createChart(document.getElementById('moduleAbsenceChart'), {
+            // Module Absence Chart
+            if (Object.keys(absencesPerModule).length > 0) {
+                const ctx1 = document.getElementById('moduleAbsenceChart');
+                if (ctx1) {
+                    createChart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(absencesPerModule),
+                            datasets: [{
+                                label: 'Absences',
+                                data: Object.values(absencesPerModule),
+                                backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                                borderColor: 'rgba(59, 130, 246, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: barOptions
+                    });
+                }
+
+                // Absence Distribution Chart
+                const ctx2 = document.getElementById('absenceDistributionChart');
+                if (ctx2) {
+                    createChart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(absencesPerModule),
+                            datasets: [{
+                                data: Object.values(absencesPerModule),
+                                backgroundColor: [
+                                    '#60A5FA', '#F87171', '#34D399', 
+                                    '#FBBF24', '#A78BFA', '#FB7185',
+                                    '#4ADE80', '#FACC15', '#C084FC'
+                                ]
+                            }]
+                        },
+                        options: doughnutOptions
+                    });
+                }
+            } else {
+                // Show "No data" message for module charts
+                ['moduleAbsenceChart', 'absenceDistributionChart'].forEach(chartId => {
+                    const canvas = document.getElementById(chartId);
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#9CA3AF';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+                    }
+                });
+            }
+
+            // Absences Over Time Chart
+            if (Object.keys(absencesOverTime).length > 0) {
+                const ctx3 = document.getElementById('absencesOverTimeChart');
+                if (ctx3) {
+                    createChart(ctx3, {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(absencesOverTime),
+                            datasets: [{
+                                label: 'Absences Over Time',
+                                data: Object.values(absencesOverTime),
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: barOptions
+                    });
+                }
+            }
+
+            // Absence Reason Chart
+            if (Object.keys(absencesByReason).length > 0) {
+                const ctx4 = document.getElementById('absenceReasonChart');
+                if (ctx4) {
+                    createChart(ctx4, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(absencesByReason),
+                            datasets: [{
+                                data: Object.values(absencesByReason),
+                                backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA']
+                            }]
+                        },
+                        options: doughnutOptions
+                    });
+                }
+            }
+
+            // Top Trainees Chart
+            if (Object.keys(topTrainees).length > 0) {
+                const ctx5 = document.getElementById('topTraineesChart');
+                if (ctx5) {
+                    createChart(ctx5, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(topTrainees),
+                            datasets: [{
+                                label: 'Top Trainees',
+                                data: Object.values(topTrainees),
+                                backgroundColor: '#F87171'
+                            }]
+                        },
+                        options: {
+                            ...barOptions,
+                            indexAxis: 'y',
+                            aspectRatio: 1.2
+                        }
+                    });
+                }
+            }
+
+            // Weekly Absences Chart
+            if (Object.keys(weeklyAbsenceCounts).length > 0) {
+                const ctx6 = document.getElementById('weeklyAbsencesChart');
+                if (ctx6) {
+                    createChart(ctx6, {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(weeklyAbsenceCounts),
+                            datasets: [{
+                                label: 'Weekly Absences',
+                                data: Object.values(weeklyAbsenceCounts),
+                                borderColor: '#3B82F6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: barOptions
+                    });
+                }
+            }
+
+            // Justified vs Unjustified Chart
+            const ctx7 = document.getElementById('justifiedChart');
+            if (ctx7) {
+                createChart(ctx7, {
                     type: 'bar',
                     data: {
-                        labels: Object.keys(absencesPerModule),
+                        labels: ['Justified', 'Unjustified'],
                         datasets: [{
                             label: 'Absences',
-                            data: Object.values(absencesPerModule),
-                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: barOptions
-                });
-
-                createChart(document.getElementById('absenceDistributionChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(absencesPerModule),
-                        datasets: [{
-                            data: Object.values(absencesPerModule),
-                            backgroundColor: ['#60A5FA', '#F87171', '#34D399', '#FBBF24', '#A78BFA']
-                        }]
-                    },
-                    options: doughnutOptions
-                });
-            }
-
-            if (Object.keys(absencesOverTime).length) {
-                createChart(document.getElementById('absencesOverTimeChart'), {
-                    type: 'line',
-                    data: {
-                        labels: Object.keys(absencesOverTime),
-                        datasets: [{
-                            label: 'Absences Over Time',
-                            data: Object.values(absencesOverTime),
-                            borderColor: '#3B82F6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: barOptions
-                });
-            }
-
-            if (Object.keys(absencesByReason).length) {
-                createChart(document.getElementById('absenceReasonChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(absencesByReason),
-                        datasets: [{
-                            data: Object.values(absencesByReason),
-                            backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA']
-                        }]
-                    },
-                    options: doughnutOptions
-                });
-            }
-
-            if (Object.keys(topTrainees).length) {
-                createChart(document.getElementById('topTraineesChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(topTrainees),
-                        datasets: [{
-                            label: 'Top Trainees',
-                            data: Object.values(topTrainees),
-                            backgroundColor: '#F87171'
+                            data: [justifiedCount, unjustifiedCount],
+                            backgroundColor: ['#34D399', '#F87171']
                         }]
                     },
                     options: {
                         ...barOptions,
-                        indexAxis: 'y',
-                        aspectRatio: 1.2
-                    }
-                });
-            }
-
-            if (Object.keys(weeklyAbsenceCounts).length) {
-                createChart(document.getElementById('weeklyAbsencesChart'), {
-                    type: 'line',
-                    data: {
-                        labels: Object.keys(weeklyAbsenceCounts),
-                        datasets: [{
-                            label: 'Weekly Absences',
-                            data: Object.values(weeklyAbsenceCounts),
-                            borderColor: '#3B82F6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: barOptions
-                });
-            }
-
-            createChart(document.getElementById('justifiedChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Justified', 'Unjustified'],
-                    datasets: [{
-                        label: 'Absences',
-                        data: [justifiedCount, unjustifiedCount],
-                        backgroundColor: ['#34D399', '#F87171']
-                    }]
-                },
-                options: {
-                    ...barOptions,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
                             }
                         }
                     }
+                });
+            }
+
+            // Handle empty charts
+            ['absenceReasonChart', 'topTraineesChart', 'weeklyAbsencesChart', 'absencesOverTimeChart'].forEach(chartId => {
+                const canvas = document.getElementById(chartId);
+                if (canvas && !canvas.chart) {
+                    const ctx = canvas.getContext('2d');
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#9CA3AF';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
                 }
             });
         });

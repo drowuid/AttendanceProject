@@ -100,6 +100,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
 // Trainer-only routes
 Route::middleware(['role:trainer'])
     ->prefix('trainer')
@@ -129,9 +130,9 @@ Route::middleware(['role:trainer'])
         // Stats
         Route::get('/statistics', [TrainerStatisticsController::class, 'index'])->name('statistics');
 
-        // Export absence stats
-        Route::get('/export/absence-stats', [TrainerController::class, 'exportAbsenceStats'])->name('export.absences');
-        Route::get('/export/absence-stats/pdf', [TrainerController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
+        // Export absence stats - Fixed route names to match template
+        Route::get('/export/absence-stats', [TrainerReportController::class, 'exportAbsenceStats'])->name('export.absences');
+        Route::get('/export/absence-stats/pdf', [TrainerReportController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
 
         // Trainee management
         Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
@@ -140,12 +141,12 @@ Route::middleware(['role:trainer'])
         // Calendar (main calendar page for trainer)
         Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
 
-    // Calendar events routes - these are the ones you already have
-    Route::get('/calendar/events', [CalendarEventController::class, 'index']);
-    Route::post('/calendar/events', [CalendarEventController::class, 'store']);
-    Route::put('/calendar/events/{event}', [CalendarEventController::class, 'update']);
-    Route::delete('/calendar/events/{event}', [CalendarEventController::class, 'destroy']);
-});
+        // Calendar events routes
+        Route::get('/calendar/events', [CalendarEventController::class, 'index'])->name('calendar.events.index');
+        Route::post('/calendar/events', [CalendarEventController::class, 'store'])->name('calendar.events.store');
+        Route::put('/calendar/events/{event}', [CalendarEventController::class, 'update'])->name('calendar.events.update');
+        Route::delete('/calendar/events/{event}', [CalendarEventController::class, 'destroy'])->name('calendar.events.destroy');
+    });
 
 
 
