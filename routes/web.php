@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Trainee\DashboardController as TraineeDashboardController;
 use App\Http\Controllers\Trainer\TrainerCalendarController;
 use App\Http\Controllers\Trainer\CalendarEventController;
+use App\Http\Controllers\Trainee\TraineeCalendarController;
 
 
 
@@ -147,12 +148,7 @@ Route::middleware(['role:trainer'])
         Route::put('/calendar/events/{event}', [CalendarEventController::class, 'update'])->name('calendar.events.update');
         Route::delete('/calendar/events/{event}', [CalendarEventController::class, 'destroy'])->name('calendar.events.destroy');
     });
-
-
-
-});
-
-// Trainee-only routes
+    
 Route::middleware(['role:trainee'])
     ->prefix('trainee')
     ->name('trainee.')
@@ -165,8 +161,12 @@ Route::middleware(['role:trainee'])
         Route::get('/absences', [App\Http\Controllers\Trainee\DashboardController::class, 'absences'])->name('absences.index');
         Route::get('/absences/export-csv', [\App\Http\Controllers\Trainee\TraineeProfileExportController::class, 'exportAbsencesCsv'])->name('absences.export.csv');
         Route::get('/trainees/{id}/profile', [TrainerController::class, 'showTraineeProfile'])->name('trainees.profile');
-
+        Route::get('/calendar', [TraineeCalendarController::class, 'index'])->name('calendar.index');
+        Route::get('/calendar/events', [TraineeCalendarController::class, 'events'])->name('calendar.events'); // Fixed this line
     });
+
+
+});
 
 // <-- This closes the Route::middleware(['auth'])->group(function () { block
 

@@ -17,6 +17,10 @@
                         class="inline-flex items-center bg-purple-600 text-white px-4 py-2 rounded-lg shadow hover:bg-purple-700 transition-colors duration-150 text-sm font-medium">
                         View My Absences
                     </a>
+                    <a href="{{ route('trainee.calendar.index') }}"
+   class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition-colors duration-150 text-sm font-medium">
+   View Calendar
+</a>
                 </div>
             </div>
 

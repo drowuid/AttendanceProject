@@ -17,6 +17,7 @@ class CalendarEventController extends Controller
                 'title' => $event->module->name,
                 'start' => $event->start,
                 'end' => $event->end,
+                'allDay' => true,
                 'backgroundColor' => '#3788d8',
                 'borderColor' => '#3788d8',
                 'extendedProps' => [
@@ -41,16 +42,22 @@ class CalendarEventController extends Controller
             // Get the module to use its name as title
             $module = Module::findOrFail($validated['module_id']);
 
-            // Format dates properly
+            // Format dates properly - for single day events, don't extend to next day
             $startDate = \Carbon\Carbon::parse($validated['start']);
-            $endDate = $validated['end'] ? \Carbon\Carbon::parse($validated['end']) : $startDate->copy()->endOfDay();
+
+            // If it's a day selection (no time), make it a single day event
+            if (strlen($validated['start']) === 10) { // Format: YYYY-MM-DD
+                $endDate = $startDate->copy(); // Same day, not extending to next day
+            } else {
+                $endDate = $validated['end'] ? \Carbon\Carbon::parse($validated['end']) : $startDate->copy();
+            }
 
             $event = CalendarEvent::create([
                 'module_id' => $validated['module_id'],
                 'title' => $module->name,
                 'description' => 'Module: ' . $module->name,
-                'start' => $startDate->format('Y-m-d H:i:s'),
-                'end' => $endDate->format('Y-m-d H:i:s'),
+                'start' => $startDate->format('Y-m-d'),
+                'end' => $endDate->format('Y-m-d'),
             ]);
 
             // Load the module relationship for the response
