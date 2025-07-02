@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Module;
 use App\Models\CalendarEvent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TrainerCalendarController extends Controller
 {
@@ -41,4 +42,70 @@ class TrainerCalendarController extends Controller
         $modules = Module::all();
         return view('calendar.index', compact('modules'));
     }
+
+    public function events()
+{
+    $events = CalendarEvent::with('module')->get();
+
+    $formatted = $events->map(function($event) {
+        return [
+            'id' => $event->id,
+            'title' => $event->module ? $event->module->name : 'No Module',
+            'start' => $event->start,
+            'end' => $event->end,
+            'module_id' => $event->module_id,
+        ];
+    });
+
+    return response()->json($formatted);
+}
+
+public function store(Request $request)
+{
+    $request->validate([
+        'start' => 'required|date',
+        'end' => 'nullable|date',
+        'module_id' => 'required|exists:modules,id',
+    ]);
+
+    $event = CalendarEvent::create([
+        'start' => $request->start,
+        'end' => $request->end,
+        'module_id' => $request->module_id,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'event' => [
+            'id' => $event->id,
+            'title' => $event->module->name,
+            'start' => $event->start,
+            'end' => $event->end,
+            'module_id' => $event->module_id,
+        ],
+    ]);
+}
+
+public function update(Request $request, CalendarEvent $event)
+{
+    $data = $request->validate([
+        'start' => 'nullable|date',
+        'end' => 'nullable|date',
+        'module_id' => 'nullable|exists:modules,id',
+    ]);
+
+    $event->update(array_filter($data));
+
+    return response()->json(['success' => true]);
+}
+
+public function destroy(CalendarEvent $event)
+{
+    $event->delete();
+    return response()->json(['success' => true]);
+}
+
+
+
+
 }

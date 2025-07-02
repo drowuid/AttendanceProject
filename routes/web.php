@@ -143,12 +143,13 @@ Route::middleware(['role:trainer'])
         Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
 
         // Calendar events routes
-        Route::get('/calendar/events', [CalendarEventController::class, 'index'])->name('calendar.events.index');
-        Route::post('/calendar/events', [CalendarEventController::class, 'store'])->name('calendar.events.store');
-        Route::put('/calendar/events/{event}', [CalendarEventController::class, 'update'])->name('calendar.events.update');
-        Route::delete('/calendar/events/{event}', [CalendarEventController::class, 'destroy'])->name('calendar.events.destroy');
+        Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
+        Route::get('/calendar/events', [TrainerCalendarController::class, 'events'])->name('calendar.events');
+        Route::post('/calendar/events', [TrainerCalendarController::class, 'store']);
+        Route::put('/calendar/events/{event}', [TrainerCalendarController::class, 'update']);
+        Route::delete('/calendar/events/{event}', [TrainerCalendarController::class, 'destroy']);
     });
-    
+
 Route::middleware(['role:trainee'])
     ->prefix('trainee')
     ->name('trainee.')
