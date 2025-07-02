@@ -114,6 +114,37 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
+                eventDidMount: function(info) {
+    if (info.event.extendedProps.description) {
+        const tooltip = document.createElement('div');
+        tooltip.innerHTML = `<strong>${info.event.title}</strong><br>${info.event.extendedProps.description}`;
+        tooltip.style.position = 'absolute';
+        tooltip.style.zIndex = '10001';
+        tooltip.style.background = '#333';
+        tooltip.style.color = '#fff';
+        tooltip.style.padding = '5px 8px';
+        tooltip.style.borderRadius = '4px';
+        tooltip.style.fontSize = '12px';
+        tooltip.style.display = 'none';
+
+        document.body.appendChild(tooltip);
+
+        info.el.addEventListener('mouseenter', function(e) {
+            tooltip.style.left = e.pageX + 'px';
+            tooltip.style.top = e.pageY + 'px';
+            tooltip.style.display = 'block';
+        });
+
+        info.el.addEventListener('mousemove', function(e) {
+            tooltip.style.left = e.pageX + 'px';
+            tooltip.style.top = e.pageY + 'px';
+        });
+
+        info.el.addEventListener('mouseleave', function() {
+            tooltip.style.display = 'none';
+        });
+    }
+},
                 selectable: true,
                 editable: true,
                 slotMinTime: '08:00:00',
