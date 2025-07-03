@@ -3,42 +3,39 @@
 namespace App\Http\Controllers\Trainer;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Trainee;
 use App\Models\Absence;
+use Illuminate\Http\Request;
 
 class TrainerTraineeController extends Controller
 {
     public function index()
     {
-        $trainees = \App\Models\Trainee::with('course')->paginate(10);
-        return view('trainer.trainees.index', compact('trainees'));
+        $trainees = Trainee::with(['modules', 'absences'])
+            ->orderBy('name')
+            ->paginate(10);
+
+        return view('trainer.trainee.index', compact('trainees'));
     }
 
-    public function show($traineeId)
+    public function show($id)
 {
-    $trainee = \App\Models\Trainee::findOrFail($traineeId);
+    $user = \App\Models\User::where('role', 'trainee')->findOrFail($id);
 
-    $absences = \App\Models\Absence::where('trainee_id', $traineeId)
-        ->with('module')
-        ->orderBy('date', 'desc')
-        ->get();
+    $absences = $user->absences()->with('module')->get();
+    $modules = $user->modules()->get();
 
-    $modules = $trainee->modules()->pluck('name')->toArray();
-
-    $totalAbsences = $absences->count();
-    $justifiedAbsences = $absences->where('justified', true)->count();
-    $unjustifiedAbsences = $absences->where('justified', false)->count();
-    $moduleCount = count($modules);
-
-    return view('trainer.trainee.profile', compact(
-        'trainee',
-        'absences',
-        'modules',
-        'totalAbsences',
-        'justifiedAbsences',
-        'unjustifiedAbsences',
-        'moduleCount'
-    ));
+    return view('trainer.trainee.profile', [
+        'trainee' => $user,
+        'absences' => $absences,
+        'modules' => $modules,
+        'totalAbsences' => $absences->count(),
+        'justifiedAbsences' => $absences->where('justified', true)->count(),
+        'unjustifiedAbsences' => $absences->where('justified', false)->count(),
+        'moduleCount' => $modules->count(),
+    ]);
 }
+
+
+
 }

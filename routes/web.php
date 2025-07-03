@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+
 // Trainer-only routes
 Route::middleware(['role:trainer'])
     ->prefix('trainer')
@@ -135,15 +136,15 @@ Route::middleware(['role:trainer'])
         Route::get('/export/absence-stats', [TrainerReportController::class, 'exportAbsenceStats'])->name('export.absences');
         Route::get('/export/absence-stats/pdf', [TrainerReportController::class, 'exportAbsenceStatsPdf'])->name('export.absences.pdf');
 
-        // Trainee management
-        Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainees.index');
-        Route::get('/trainees/{trainee}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
+        // Trainee management - FIXED ROUTES
+        Route::get('/trainees', [TrainerTraineeController::class, 'index'])->name('trainee.index');
+        // FIXED: Removed extra 'trainer.' prefix and fixed URL path
+        Route::get('/trainees/{user}', [TrainerTraineeController::class, 'show'])->name('trainee.profile');
 
         // Calendar (main calendar page for trainer)
         Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
 
         // Calendar events routes
-        Route::get('/calendar', [TrainerCalendarController::class, 'index'])->name('calendar.index');
         Route::get('/calendar/events', [TrainerCalendarController::class, 'events'])->name('calendar.events');
         Route::post('/calendar/events', [TrainerCalendarController::class, 'store']);
         Route::put('/calendar/events/{event}', [TrainerCalendarController::class, 'update']);

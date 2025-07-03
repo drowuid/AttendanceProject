@@ -11,9 +11,14 @@
                 <div class="flex items-center justify-between mb-4">
                     <h1 class="text-xl font-bold text-gray-900 dark:text-white">Course Calendar</h1>
                     <a href="{{ route('trainer.dashboard') }}"
-                        class="inline-flex items-center bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
-                        Back to Dashboard
-                    </a>
+                class="inline-flex items-center bg-gray-800 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-900 transition font-semibold ml-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6" />
+                </svg>
+                Back to Dashboard
+            </a>
                 </div>
                 <div id="calendar"></div>
             </div>
@@ -114,37 +119,6 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                eventDidMount: function(info) {
-    if (info.event.extendedProps.description) {
-        const tooltip = document.createElement('div');
-        tooltip.innerHTML = `<strong>${info.event.title}</strong><br>${info.event.extendedProps.description}`;
-        tooltip.style.position = 'absolute';
-        tooltip.style.zIndex = '10001';
-        tooltip.style.background = '#333';
-        tooltip.style.color = '#fff';
-        tooltip.style.padding = '5px 8px';
-        tooltip.style.borderRadius = '4px';
-        tooltip.style.fontSize = '12px';
-        tooltip.style.display = 'none';
-
-        document.body.appendChild(tooltip);
-
-        info.el.addEventListener('mouseenter', function(e) {
-            tooltip.style.left = e.pageX + 'px';
-            tooltip.style.top = e.pageY + 'px';
-            tooltip.style.display = 'block';
-        });
-
-        info.el.addEventListener('mousemove', function(e) {
-            tooltip.style.left = e.pageX + 'px';
-            tooltip.style.top = e.pageY + 'px';
-        });
-
-        info.el.addEventListener('mouseleave', function() {
-            tooltip.style.display = 'none';
-        });
-    }
-},
                 selectable: true,
                 editable: true,
                 slotMinTime: '08:00:00',

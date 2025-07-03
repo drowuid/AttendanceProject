@@ -22,7 +22,6 @@
                             Overview of your trainees and course activity.
                         </p>
                     </div>
-
                 </div>
                 <!-- Quick Actions & Export Options -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
@@ -39,7 +38,6 @@
                         📈 View Statistics
                     </a>
                 </div>
-
 
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -80,8 +78,7 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-xs text-left">
                             <thead>
-                                <tr
-                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
                                     <th class="py-1">Trainee</th>
                                     <th class="py-1">Module</th>
                                     <th class="py-1">Date</th>
@@ -93,7 +90,7 @@
                                     <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td class="py-1">
                                             @if ($absence->trainee && isset($absence->trainee->id) && isset($absence->trainee->name))
-                                                <a href="{{ route('trainer.trainee.profile', $absence->trainee->id) }}"
+                                                <a href="{{ route('trainer.trainee.profile', ['user' => $absence->trainee->id]) }}"
                                                     class="text-blue-600 hover:underline">
                                                     {{ $absence->trainee->name }}
                                                 </a>
@@ -102,8 +99,7 @@
                                             @endif
                                         </td>
                                         <td class="py-1">{{ $absence->module->name ?? 'Unknown' }}</td>
-                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
-                                        </td>
+                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
                                         <td class="py-1">
                                             @if ($absence->justified)
                                                 <span class="text-green-600 font-medium">Yes</span>
@@ -124,12 +120,13 @@
                     </div>
                 </div>
 
+                <!-- Top Absent Trainees -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Top Absent Trainees</h2>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($topAbsentTrainees as $trainee)
                             <li class="flex justify-between items-center">
-                                <a href="{{ route('trainer.trainee.profile', $trainee['id'] ?? '') }}"
+                                <a href="{{ route('trainer.trainee.profile', ['user' => $trainee['id'] ?? '']) }}"
                                     class="text-blue-600 hover:underline">
                                     {{ $trainee['name'] ?? 'Unknown' }}
                                 </a>
@@ -149,7 +146,7 @@
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($topJustifiedTrainees as $trainee)
                             <li class="flex justify-between items-center">
-                                <a href="{{ route('trainer.trainee.profile', $trainee['id']) }}"
+                                <a href="{{ route('trainer.trainee.profile', ['user' => $trainee['id']]) }}"
                                     class="text-blue-600 hover:underline">
                                     {{ $trainee['name'] }}
                                 </a>
@@ -170,11 +167,12 @@
                         @forelse ($recentJustifiedAbsences as $absence)
                             <li class="flex justify-between items-center">
                                 <div>
-                                    <a href="{{ route('trainer.trainee.profile', $absence['trainee']['id']) }}"
+                                    <a href="{{ route('trainer.trainee.profile', ['user' => $absence['trainee']['id']]) }}"
                                         class="text-blue-600 hover:underline">
                                         {{ $absence['trainee']['name'] ?? 'Unknown' }}
                                     </a>
-                                    <span class="text-gray-500">— {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
+                                    <span class="text-gray-500">—
+                                        {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
                                 </div>
                                 <span class="text-xs text-gray-500">
                                     {{ \Carbon\Carbon::parse($absence['date'])->format('d/m/Y') }}
@@ -186,17 +184,19 @@
                     </ul>
                 </div>
 
+                <!-- Recent Unjustified Absences -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Recent Unjustified Absences</h2>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($recentUnjustifiedAbsences as $absence)
                             <li class="flex justify-between items-center">
                                 <div>
-                                    <a href="{{ route('trainer.trainee.profile', $absence['trainee']['id']) }}"
+                                    <a href="{{ route('trainer.trainee.profile', ['user' => $absence['trainee']['id']]) }}"
                                         class="text-blue-600 hover:underline">
                                         {{ $absence['trainee']['name'] ?? 'Unknown' }}
                                     </a>
-                                    <span class="text-gray-500">— {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
+                                    <span class="text-gray-500">—
+                                        {{ $absence['module']['name'] ?? 'Unknown Module' }}</span>
                                 </div>
                                 <span class="text-xs text-gray-500">
                                     {{ \Carbon\Carbon::parse($absence['date'])->format('d/m/Y') }}
@@ -324,7 +324,7 @@
                             datasets: [{
                                 data: Object.values(absencesPerModule),
                                 backgroundColor: [
-                                    '#60A5FA', '#F87171', '#34D399', 
+                                    '#60A5FA', '#F87171', '#34D399',
                                     '#FBBF24', '#A78BFA', '#FB7185',
                                     '#4ADE80', '#FACC15', '#C084FC'
                                 ]
@@ -379,7 +379,9 @@
                             labels: Object.keys(absencesByReason),
                             datasets: [{
                                 data: Object.values(absencesByReason),
-                                backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24', '#A78BFA']
+                                backgroundColor: ['#F87171', '#60A5FA', '#34D399', '#FBBF24',
+                                    '#A78BFA'
+                                ]
                             }]
                         },
                         options: doughnutOptions
@@ -460,16 +462,17 @@
             }
 
             // Handle empty charts
-            ['absenceReasonChart', 'topTraineesChart', 'weeklyAbsencesChart', 'absencesOverTimeChart'].forEach(chartId => {
-                const canvas = document.getElementById(chartId);
-                if (canvas && !canvas.chart) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.font = '14px Arial';
-                    ctx.fillStyle = '#9CA3AF';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
-                }
-            });
+            ['absenceReasonChart', 'topTraineesChart', 'weeklyAbsencesChart', 'absencesOverTimeChart'].forEach(
+                chartId => {
+                    const canvas = document.getElementById(chartId);
+                    if (canvas && !canvas.chart) {
+                        const ctx = canvas.getContext('2d');
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#9CA3AF';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('No data available', canvas.width / 2, canvas.height / 2);
+                    }
+                });
         });
     </script>
 @endsection
