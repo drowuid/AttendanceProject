@@ -154,10 +154,10 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/calendar/events/{event}', [TrainerCalendarController::class, 'destroy']);
             Route::post('/trainer/pins/generate', [TrainerAttendanceController::class, 'generatePinManual'])->name('trainer.pins.generate');
 
-            Route::post('/pins/generate', [TrainerAttendanceController::class, 'generatePinManual'])->name('pins.generate');
-        Route::post('/pins/generate/{module}', [TrainerAttendanceController::class, 'generatePinForModule'])->name('pins.generate.module');
-        Route::get('/pins/active', [TrainerAttendanceController::class, 'getActivePins'])->name('pins.active');
-        Route::delete('/pins/{pin}/deactivate', [TrainerAttendanceController::class, 'deactivatePin'])->name('pins.deactivate');
+                Route::post('/pins/generate', [TrainerAttendanceController::class, 'generatePinManual'])->name('pins.generate');
+    Route::post('/pins/generate/{module}', [TrainerAttendanceController::class, 'generatePinForModule'])->name('pins.generate.module');
+    Route::get('/pins/active', [TrainerAttendanceController::class, 'getActivePins'])->name('pins.active');
+    Route::post('/pins/deactivate/{pin}', [TrainerAttendanceController::class, 'deactivatePin'])->name('pins.deactivate');
     });
 
 
@@ -176,8 +176,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/calendar', [TraineeCalendarController::class, 'index'])->name('calendar.index');
             Route::get('/calendar/events', [TraineeCalendarController::class, 'events'])->name('calendar.events'); // Fixed this line
 
-
-        });
+            // Attendance PIN management
+        Route::get('/attendance', [TraineeAttendanceController::class, 'index'])->name('trainee.attendance');
+    Route::post('/attendance/confirm', [TraineeAttendanceController::class, 'confirm'])->name('trainee.attendance.confirm');
+    Route::post('/attendance/justify', [TraineeAttendanceController::class, 'justify'])->name('trainee.attendance.justify');
+    });
 
 
 });

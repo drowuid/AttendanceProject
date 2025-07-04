@@ -75,12 +75,12 @@
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Active Attendance PINs</h2>
                     <form method="POST" action="{{ route('trainer.pins.generate') }}" class="mb-3">
-                        @csrf
-                        <button type="submit"
-                            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-                            Generate PIN Now
-                        </button>
-                    </form>
+    @csrf
+    <button type="submit"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+        Generate PIN Now
+    </button>
+</form>
                     <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                         @forelse ($activePins as $pin)
                             <li class="flex justify-between">

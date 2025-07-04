@@ -7,7 +7,6 @@ use App\Models\AttendancePin;
 use App\Models\ConfirmedAttendance;
 use Carbon\Carbon;
 use Auth;
-use App\Models\Module;
 
 class TraineeAttendanceController extends Controller
 {
@@ -72,5 +71,4 @@ class TraineeAttendanceController extends Controller
 
         return back()->with('success', 'Justification uploaded.');
     }
-
 }

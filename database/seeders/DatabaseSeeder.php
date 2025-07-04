@@ -3,10 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Database\Seeders\TraineeSeeder;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Models\ModuleSchedule;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,7 +33,7 @@ class DatabaseSeeder extends Seeder
 
 
         // Create an admin user
-         User::create([
+        User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),

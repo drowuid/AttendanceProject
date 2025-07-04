@@ -9,9 +9,24 @@ use Carbon\Carbon;
 
 class GenerateAttendancePins extends Command
 {
-    protected $signature = 'attendance:generate-pins';
-    protected $description = 'Generate or refresh attendance PINs every 3 minutes';
 
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:generate-attendance-pins';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Execute the console command.
+     */
     public function handle()
     {
         $modules = Module::all();

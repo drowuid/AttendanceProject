@@ -5,26 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ConfirmedAttendance extends Model
+class ModuleSchedule extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'trainee_id',
         'module_id',
-        'date',
-        'present',
-        'justification_file',
+        'scheduled_date',
     ];
-
-    public function trainee()
-    {
-        return $this->belongsTo(User::class, 'trainee_id');
-    }
 
     public function module()
     {
         return $this->belongsTo(Module::class);
     }
 }
-

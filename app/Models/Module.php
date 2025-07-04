@@ -31,7 +31,10 @@ public function trainer()
     return $this->belongsTo(User::class, 'trainer_id');
 }
 
-
+public function schedules()
+{
+    return $this->hasMany(\App\Models\ModuleSchedule::class);
+}
 
 
 }

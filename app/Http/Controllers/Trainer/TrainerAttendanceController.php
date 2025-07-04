@@ -10,90 +10,97 @@ use Carbon\Carbon;
 
 class TrainerAttendanceController extends Controller
 {
+    /**
+     * Generate PINs for modules scheduled today
+     */
     public function generatePinManual(Request $request)
     {
         $trainerId = auth()->id();
 
-        // Find all modules assigned to this trainer
-        // You might need to adjust this query based on your actual database structure
-        $modules = Module::where('trainer_id', $trainerId)->get();
+        // Get modules for this trainer that have schedule today
+        $todayModules = Module::where('trainer_id', $trainerId)
+            ->whereHas('schedules', function ($query) {
+                $query->whereDate('scheduled_date', Carbon::today());
+            })
+            ->get();
 
-        if ($modules->isEmpty()) {
-            return back()->with('error', 'No modules assigned to you.');
+        if ($todayModules->isEmpty()) {
+            return back()->with('error', 'No modules scheduled for today.');
         }
 
         $generatedPins = [];
 
-        foreach ($modules as $module) {
-            // Generate random 4-digit PIN
+        foreach ($todayModules as $module) {
             $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
 
-            // First, delete any existing active pins for this module
             AttendancePin::where('module_id', $module->id)
                 ->where('expires_at', '>', now())
                 ->delete();
 
-            // Create new pin
             $attendancePin = AttendancePin::create([
                 'module_id' => $module->id,
                 'pin' => $pin,
-                'expires_at' => now()->addMinutes(15), // 15 minutes expiry
+                'expires_at' => now()->addMinutes(15),
             ]);
 
             $generatedPins[] = [
                 'module' => $module->name,
                 'pin' => $pin,
-                'expires_at' => $attendancePin->expires_at
+                'expires_at' => $attendancePin->expires_at,
             ];
         }
 
-        return back()->with('success', 'Attendance PINs generated successfully for all your modules.')
-                    ->with('generated_pins', $generatedPins);
+        return back()
+            ->with('success', 'Attendance PINs generated for today\'s modules.')
+            ->with('generated_pins', $generatedPins);
     }
 
+    /**
+     * Generate PIN for a single module scheduled today
+     */
     public function generatePinForModule(Request $request, $moduleId)
     {
         $trainerId = auth()->id();
 
-        // Verify the module belongs to this trainer
         $module = Module::where('id', $moduleId)
-                        ->where('trainer_id', $trainerId)
-                        ->first();
+            ->where('trainer_id', $trainerId)
+            ->whereHas('schedules', function ($query) {
+                $query->whereDate('scheduled_date', Carbon::today());
+            })
+            ->first();
 
         if (!$module) {
-            return back()->with('error', 'Module not found or you do not have permission to generate PINs for this module.');
+            return back()->with('error', 'Module not found or not scheduled for today.');
         }
 
-        // Generate random 4-digit PIN
         $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
 
-        // Delete any existing active pins for this module
         AttendancePin::where('module_id', $module->id)
             ->where('expires_at', '>', now())
             ->delete();
 
-        // Create new pin
-        $attendancePin = AttendancePin::create([
+        AttendancePin::create([
             'module_id' => $module->id,
             'pin' => $pin,
-            'expires_at' => now()->addMinutes(15), // 15 minutes expiry
+            'expires_at' => now()->addMinutes(15),
         ]);
 
-        return back()->with('success', "PIN generated for {$module->name}: {$pin}")
-                    ->with('generated_pin', [
-                        'module' => $module->name,
-                        'pin' => $pin,
-                        'expires_at' => $attendancePin->expires_at
-                    ]);
+        return back()->with('success', "PIN generated for '{$module->name}': {$pin}");
     }
 
+    /**
+     * Get active pins for today
+     */
     public function getActivePins()
     {
         $trainerId = auth()->id();
 
         $activePins = AttendancePin::with('module')
-            ->whereHas('module', function($query) use ($trainerId) {
-                $query->where('trainer_id', $trainerId);
+            ->whereHas('module', function ($query) use ($trainerId) {
+                $query->where('trainer_id', $trainerId)
+                      ->whereHas('schedules', function ($q) {
+                          $q->whereDate('scheduled_date', Carbon::today());
+                      });
             })
             ->where('expires_at', '>', now())
             ->orderBy('expires_at', 'desc')
@@ -102,19 +109,22 @@ class TrainerAttendanceController extends Controller
         return response()->json($activePins);
     }
 
+    /**
+     * Deactivate a PIN
+     */
     public function deactivatePin($pinId)
     {
         $trainerId = auth()->id();
 
         $pin = AttendancePin::with('module')
-            ->whereHas('module', function($query) use ($trainerId) {
+            ->whereHas('module', function ($query) use ($trainerId) {
                 $query->where('trainer_id', $trainerId);
             })
             ->where('id', $pinId)
             ->first();
 
         if (!$pin) {
-            return back()->with('error', 'PIN not found or you do not have permission to deactivate it.');
+            return back()->with('error', 'PIN not found or you do not have permission.');
         }
 
         $pin->update(['expires_at' => now()]);
