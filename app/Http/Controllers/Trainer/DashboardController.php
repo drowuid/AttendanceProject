@@ -18,7 +18,7 @@ class DashboardController extends Controller
     {
         // Get authenticated trainer
         $trainer = Auth::user();
-        
+
         // Basic statistics
         $totalAbsences = Absence::count();
         $totalTrainees = \App\Models\User::where('role', 'trainee')->count();
@@ -33,34 +33,36 @@ class DashboardController extends Controller
 
         // Top absent trainees
         $topAbsentTrainees = \App\Models\User::where('role', 'trainee')
-    ->withCount('absences')
-    ->orderBy('absences_count', 'desc')
-    ->limit(5)
-    ->get()
-    ->map(function ($trainee) {
-        return [
-            'id' => $trainee->id,
-            'name' => $trainee->name,
-            'absences_count' => $trainee->absences_count
-        ];
-    });
+            ->withCount('absences')
+            ->orderBy('absences_count', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($trainee) {
+                return [
+                    'id' => $trainee->id,
+                    'name' => $trainee->name,
+                    'absences_count' => $trainee->absences_count
+                ];
+            });
 
         // Top justified trainees
         $topJustifiedTrainees = \App\Models\User::where('role', 'trainee')
-    ->withCount(['absences' => function ($query) {
-        $query->where('justified', true);
-    }])
-    ->having('absences_count', '>', 0)
-    ->orderBy('absences_count', 'desc')
-    ->limit(5)
-    ->get()
-    ->map(function ($trainee) {
-        return [
-            'id' => $trainee->id,
-            'name' => $trainee->name,
-            'count' => $trainee->absences_count
-        ];
-    });
+            ->withCount([
+                'absences' => function ($query) {
+                    $query->where('justified', true);
+                }
+            ])
+            ->having('absences_count', '>', 0)
+            ->orderBy('absences_count', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($trainee) {
+                return [
+                    'id' => $trainee->id,
+                    'name' => $trainee->name,
+                    'count' => $trainee->absences_count
+                ];
+            });
 
         // Recent justified absences
         $recentJustifiedAbsences = Absence::with(['trainee', 'module'])
@@ -105,7 +107,7 @@ class DashboardController extends Controller
 
         return view('trainer.dashboard', array_merge(compact(
             'totalAbsences',
-            'totalTrainees', 
+            'totalTrainees',
             'totalModules',
             'totalAttendance',
             'recentAbsences',
@@ -167,7 +169,7 @@ class DashboardController extends Controller
             $startOfWeek = Carbon::now()->subWeeks($i)->startOfWeek();
             $endOfWeek = Carbon::now()->subWeeks($i)->endOfWeek();
             $weekKey = 'Week ' . $startOfWeek->format('M d');
-            
+
             $count = Absence::whereBetween('date', [$startOfWeek, $endOfWeek])->count();
             $weeklyAbsenceCounts[$weekKey] = $count;
         }
@@ -176,6 +178,11 @@ class DashboardController extends Controller
         $justifiedCount = Absence::where('justified', true)->count();
         $unjustifiedCount = Absence::where('justified', false)->count();
 
+        $activePins = \App\Models\AttendancePin::with('module')
+            ->where('expires_at', '>', now())
+            ->get();    
+
+
         return [
             'absencesPerModule' => $absencesPerModule,
             'absencesOverTime' => $absencesOverTime,
@@ -183,7 +190,8 @@ class DashboardController extends Controller
             'topTrainees' => $topTrainees,
             'weeklyAbsenceCounts' => $weeklyAbsenceCounts,
             'justifiedCount' => $justifiedCount,
-            'unjustifiedCount' => $unjustifiedCount
+            'unjustifiedCount' => $unjustifiedCount,
+            'activePins' => $activePins,
         ];
     }
 }

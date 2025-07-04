@@ -72,13 +72,37 @@
                     </div>
                 </div>
 
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+                    <h2 class="text-base font-semibold mb-3 text-gray-900 dark:text-white">Active Attendance PINs</h2>
+                    <form method="POST" action="{{ route('trainer.pins.generate') }}" class="mb-3">
+                        @csrf
+                        <button type="submit"
+                            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                            Generate PIN Now
+                        </button>
+                    </form>
+                    <ul class="text-sm text-gray-700 dark:text-gray-300 space-y-2">
+                        @forelse ($activePins as $pin)
+                            <li class="flex justify-between">
+                                <span>{{ $pin->module->name }}</span>
+                                <span class="font-bold">{{ $pin->pin }}</span>
+                                <span class="text-xs text-gray-500">Expires {{ $pin->expires_at->diffForHumans() }}</span>
+                            </li>
+                        @empty
+                            <li class="text-gray-400">No active PINs.</li>
+                        @endforelse
+                    </ul>
+                </div>
+
+
                 <!-- Recent Absences Table -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
                     <h2 class="text-base font-semibold mb-2 text-gray-900 dark:text-white">Recent Trainee Absences</h2>
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-xs text-left">
                             <thead>
-                                <tr class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
+                                <tr
+                                    class="text-xs uppercase text-gray-600 dark:text-gray-300 border-b dark:border-gray-700">
                                     <th class="py-1">Trainee</th>
                                     <th class="py-1">Module</th>
                                     <th class="py-1">Date</th>
@@ -99,7 +123,8 @@
                                             @endif
                                         </td>
                                         <td class="py-1">{{ $absence->module->name ?? 'Unknown' }}</td>
-                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}</td>
+                                        <td class="py-1">{{ \Carbon\Carbon::parse($absence->date)->format('d/m/Y') }}
+                                        </td>
                                         <td class="py-1">
                                             @if ($absence->justified)
                                                 <span class="text-green-600 font-medium">Yes</span>
